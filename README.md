@@ -1,4 +1,4 @@
-<div align="center"><h1>Lognet</h1></div>
+<div align="center"><img src="https://github.com/backrunner/lognet-frontend/raw/master/src/assets/image/lognet.png" width="96"/><h1>Lognet</h1></div>
 
 ## 概览
 
