@@ -3,7 +3,7 @@ import { GithubOutlined } from '@ant-design/icons';
 
 class Footer extends React.Component {
     openGithub = () => {
-        window.open('https://github.com/backrunner/lognet-frontend');
+        window.open('https://github.com/pwp-app/lognet-frontend');
     }
     render() {
         return (
