@@ -1,27 +1,14 @@
 import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-// routes
-import routes from './routes/site';
+import Routes from './routes/routes';
+import { BrowserRouter as Router } from 'react-router-dom';
 
-class App extends React.Component {
-    renderRoutes = (routes, parentPath) => {
-        return routes.map((route) => {
-            if (route.children) {
-                return this.renderRoutes(route.children, route.path);
-            }
-            let path = parentPath ? parentPath + route.path : route.path;
-            return <Route key={path} path={path} component={route.component}/>;
-        })
-    }
-
+class App extends React.PureComponent {
     render() {
         return (
             <div className="app">
-                <BrowserRouter>
-                    <Switch>
-                        { this.renderRoutes(routes) }
-                    </Switch>
-                </BrowserRouter>
+                <Router>
+                    <Routes/>
+                </Router>
             </div>
         )
     }
