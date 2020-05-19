@@ -20,7 +20,7 @@ class LandingPage extends React.Component {
                             <img src={ logo } alt="Lognet"/>
                         </div>
                         <div className="landing-title-text">
-                            <span>专为 WebApp 提供日志收集服务</span>
+                            <span>专为 WebApps 提供日志收集服务</span>
                         </div>
                         <div className="landing-title-action">
                             <Button type="primary" size="large" shape="round" onClick={this.goPortal}>开始使用</Button>
