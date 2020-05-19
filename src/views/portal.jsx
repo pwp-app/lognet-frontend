@@ -28,7 +28,7 @@ class PortalPage extends React.Component {
     }
     render() {
         return (
-            <div className="page-portal">
+            <div className="page page-portal">
                 <div className="container container-portal">
                     <div className="portal-title">
                         <div className="portal-title-logo">

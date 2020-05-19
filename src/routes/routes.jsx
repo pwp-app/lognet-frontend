@@ -18,8 +18,8 @@ class Routes extends React.Component {
     render() {
         const { location } = this.props;
         return (
-            <TransitionGroup className={'router-wrapper'}>
-                <CSSTransition classNames={'fade'} key={location.pathname} appear={true} timeout={300} unmountOnExit={true}>
+            <TransitionGroup>
+                <CSSTransition classNames="fade" appear={true} key={location.pathname} timeout={300} unmountOnExit>
                     <Switch location={location}>
                         {this.renderRoutes(routes)}
                         <Redirect to="/404" />
