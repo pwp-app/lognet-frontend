@@ -1,0 +1,58 @@
+.page-portal {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container-portal {
+    padding: 28px 36px 32px 36px;
+    min-width: 420px;
+    border-radius: 24px;
+    border: 1px solid #fafafa;
+    box-shadow: 0 0 48px rgba(0, 0, 0, .05);
+    .portal-title {
+        margin-bottom: 32px;
+        &-logo {
+            text-align: center;
+            margin: 12px 0 8px 0;
+            img {
+                width: 58px;
+            }
+        }
+        &-text {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.125em;
+            color: @color-primary;
+            margin: 14px 0;
+        }
+    }
+    .portal-form {
+        .portal-form-action {
+            margin: 36px 0 32px 0;
+            text-align: center;
+        }
+        .ant-btn {
+            font-size: 14px;
+            letter-spacing: 0.05em;
+        }
+        .ant-btn:first-child {
+            margin-right: 16px;
+        }
+        .ant-form-item-label {
+            user-select: none;
+        }
+    }
+    .portal-back {
+        margin: 56px auto 38px auto;
+        width: max-content;
+        color: #bfbfbf;
+        transition: 200ms;
+    }
+    .portal-back:hover {
+        color: #8c8c8c;
+        cursor: pointer;
+    }
+}

@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './app';
+import { ConfigProvider } from 'antd';
 import './styles/main.less';
 
 ReactDOM.render(
-    <React.StrictMode>
+    <ConfigProvider autoInsertSpaceInButton={false}>
         <App />
-    </React.StrictMode>,
+    </ConfigProvider>,
     document.getElementById('root')
 );

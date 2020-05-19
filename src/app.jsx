@@ -2,7 +2,7 @@ import React from 'react';
 import Routes from './routes/routes';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-class App extends React.PureComponent {
+class App extends React.Component {
     render() {
         return (
             <div className="app">
