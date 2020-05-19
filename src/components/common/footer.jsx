@@ -2,6 +2,9 @@ import React from 'react';
 import { GithubOutlined } from '@ant-design/icons';
 
 class Footer extends React.Component {
+    openGithub = () => {
+        window.open('https://github.com/backrunner/lognet-frontend');
+    }
     render() {
         return (
             <div className="footer-wrapper">
@@ -10,7 +13,7 @@ class Footer extends React.Component {
                         Copyright &copy; 2020 pwp.app
                     </div>
                     <div className="footer-icons">
-                        <div className="footer-icons-github">
+                        <div className="footer-icon footer-icon-github" onClick={this.openGithub}>
                             <GithubOutlined />
                         </div>
                     </div>
