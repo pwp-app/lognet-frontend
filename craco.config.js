@@ -16,4 +16,12 @@ module.exports = {
             plugin: AntdDayjsWebpackPlugin
         }
     ],
+    devServer: {
+        proxy: {
+            '/api': {
+                target: 'http://localhost:8800',
+                pathRewrite: {'^/api' : ''}
+            }
+        }
+    }
 };
