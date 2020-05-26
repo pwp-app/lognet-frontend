@@ -35,26 +35,24 @@ class PortalPage extends React.Component {
     backHome = () => {
         this.props.history.push('/');
     };
-    needValidate = () => {
-        
-    };
-    getValidate = email => {
-        axios.get('/portal/sendValidation', {
-            params: {
-                email
-            }
-        }).then(res => {
-
-        })
+    needValidate = () => {};
+    getValidate = (email) => {
+        axios
+            .get('/portal/sendValidation', {
+                params: {
+                    email,
+                },
+            })
+            .then((res) => {});
     };
     sendValidate = (email, code) => {
-        axios.post('/portal/validate', {
-            email,
-            code
-        }).then(res => {
-
-        });
-    }
+        axios
+            .post('/portal/validate', {
+                email,
+                code,
+            })
+            .then((res) => {});
+    };
     render() {
         const LoginForm = withGoogleReCaptcha(LoginFormBuilder);
         const RegisterForm = withGoogleReCaptcha(RegisterFormBuilder);
@@ -84,7 +82,7 @@ class PortalPage extends React.Component {
                             } else if (this.state.formType === 'register') {
                                 return <RegisterForm switch={this.switchLogin} />;
                             } else if (this.state.formType === 'validation') {
-                                return <ValidationForm switch={this.switchLogin} retryTime={this.state.retryTime} send={this.getValidate} validate={this.sendValidate}/>;
+                                return <ValidationForm switch={this.switchLogin} retryTime={this.state.retryTime} send={this.getValidate} validate={this.sendValidate} />;
                             }
                         })()}
                     </div>
@@ -138,6 +136,7 @@ class LoginFormBuilder extends React.Component {
                     message.error(res.data.message);
                     return;
                 }
+                // 登录成功
             })
             .catch(() => {
                 message.error('网络连接失败');
@@ -180,14 +179,24 @@ class RegisterFormBuilder extends React.Component {
         this.form = React.createRef();
     }
     onFinish = (values) => {
-        console.log(values);
+        axios
+            .post('/portal/register', {})
+            .then(res => {
+                
+            })
+            .catch(() => {
+                message.error('网络连接失败');
+                this.setState({
+                    loginButtonDisabled: false,
+                });
+            });
     };
     submitForm = () => {
         this.form.current.submit();
     };
     render() {
         return (
-            <Form {...layout} ref={this.form} name="register" labelAlign="left" onFinish={this.onFinish}>
+            <Form {...layout} name="register" labelAlign="left" onFinish={this.onFinish}>
                 <Form.Item
                     label="用户名"
                     name="username"
@@ -203,7 +212,21 @@ class RegisterFormBuilder extends React.Component {
                 <Form.Item label="密码" name="password" rules={[{ required: true, message: '请输入密码' }]}>
                     <Input.Password />
                 </Form.Item>
-                <Form.Item label="确认密码" name="confirmPassword" rules={[{ required: true, message: '请再次输入密码' }]}>
+                <Form.Item
+                    label="确认密码"
+                    name="confirmPassword"
+                    rules={[
+                        { required: true, message: '请再次输入密码' },
+                        ({ getFieldValue }) => ({
+                            validator(rule, value) {
+                                if (!value || getFieldValue('password') === value) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject('两次输入的密码不一致！');
+                            },
+                        }),
+                    ]}
+                >
                     <Input.Password />
                 </Form.Item>
                 <Form.Item
