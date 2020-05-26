@@ -12,6 +12,7 @@
     "axios": "^0.19.2",
     "craco-less": "^1.16.0",
     "crypto-js": "^4.0.0",
+    "qs": "^6.9.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-google-recaptcha-v3": "^1.5.2",

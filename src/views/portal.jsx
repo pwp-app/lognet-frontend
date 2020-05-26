@@ -3,7 +3,7 @@ import { Form, Input, Button, Checkbox, message } from 'antd';
 import { withRouter } from 'react-router-dom';
 import { withGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import sha256 from 'crypto-js/sha256';
-import axios from 'axios';
+import axios from '../utils/axios';
 import logo from '../assets/image/lognet.png';
 
 // form layouts
@@ -18,7 +18,7 @@ const tailLayout = {
 
 class PortalPage extends React.Component {
     state = {
-        formType: 'login',
+        formType: 'validation',
     };
     switchRegister = () => {
         this.setState({
@@ -43,7 +43,17 @@ class PortalPage extends React.Component {
                         <div className="portal-title-logo">
                             <img src={logo} alt="Lognet" />
                         </div>
-                        <div className="portal-title-text">{this.state.formType === 'login' ? '登录' : '注册'}</div>
+                        <div className="portal-title-text">
+                            {(() => {
+                                if (this.state.formType === 'login') {
+                                    return '登录';
+                                } else if (this.state.formType === 'register') {
+                                    return '注册';
+                                } else if (this.state.formType === 'validation') {
+                                    return '验证';
+                                }
+                            })()}
+                        </div>
                     </div>
                     <div className="portal-form">
                         {(() => {
@@ -52,6 +62,7 @@ class PortalPage extends React.Component {
                             } else if (this.state.formType === 'register') {
                                 return <RegisterForm switch={this.switchLogin} />;
                             } else if (this.state.formType === 'validation') {
+                                return <ValidationForm switch={this.switchLogin} />;
                             }
                         })()}
                     </div>
@@ -60,12 +71,16 @@ class PortalPage extends React.Component {
                     </div>
                     <div className="portal-recaptcha">
                         <p>站点由 reCAPTCHA 提供保护</p>
-                        <p>(&nbsp;&nbsp;<a target="_blank" rel="noopener noreferrer" href="https://policies.google.com/privacy?hl=zh-CN">
+                        <p>
+                            (&nbsp;&nbsp;
+                            <a target="_blank" rel="noopener noreferrer" href="https://policies.google.com/privacy?hl=zh-CN">
                                 隐私政策
-                            </a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                            </a>
+                            &nbsp;&nbsp;|&nbsp;&nbsp;
                             <a target="_blank" rel="noopener noreferrer" href="https://policies.google.com/terms?hl=zh-CN">
                                 使用条款
-                            </a>&nbsp;&nbsp;)
+                            </a>
+                            &nbsp;&nbsp;)
                         </p>
                     </div>
                 </div>
@@ -89,7 +104,7 @@ class LoginFormBuilder extends React.Component {
             loginButtonDisabled: true,
         });
         axios
-            .post('/api/portal/login', {
+            .post('/portal/login', {
                 ...values,
                 token: await this.props.googleReCaptchaProps.executeRecaptcha('login'),
             })
@@ -188,6 +203,36 @@ class RegisterFormBuilder extends React.Component {
                     </Button>
                 </div>
             </Form>
+        );
+    }
+}
+
+class ValidationForm extends React.Component {
+    state = {
+        retryDisabled: false,
+    };
+    render() {
+        return (
+            <div class="portal-validate">
+                <div class="portal-validate-text">
+                    <p>我们已经向您的邮箱发送了验证码，</p>
+                    <p>请在下方输入您收到的验证码：</p>
+                </div>
+                <div class="portal-validate-input">
+                    <Input />
+                    <Button type="primary" disabled={this.state.retryDisabled}>
+                        重新发送
+                    </Button>
+                </div>
+                <div className="portal-form-action">
+                    <Button size="large" shape="round" onClick={this.props.switch}>
+                        返回登录
+                    </Button>
+                    <Button type="primary" size="large" shape="round" onClick={this.submitForm}>
+                        提交
+                    </Button>
+                </div>
+            </div>
         );
     }
 }
