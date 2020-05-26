@@ -19,6 +19,8 @@ const tailLayout = {
 class PortalPage extends React.Component {
     state = {
         formType: 'validation',
+        validateMail: '',
+        validateRetryTime: 0,
     };
     switchRegister = () => {
         this.setState({
@@ -33,6 +35,26 @@ class PortalPage extends React.Component {
     backHome = () => {
         this.props.history.push('/');
     };
+    needValidate = () => {
+        
+    };
+    getValidate = email => {
+        axios.get('/portal/sendValidation', {
+            params: {
+                email
+            }
+        }).then(res => {
+
+        })
+    };
+    sendValidate = (email, code) => {
+        axios.post('/portal/validate', {
+            email,
+            code
+        }).then(res => {
+
+        });
+    }
     render() {
         const LoginForm = withGoogleReCaptcha(LoginFormBuilder);
         const RegisterForm = withGoogleReCaptcha(RegisterFormBuilder);
@@ -62,7 +84,7 @@ class PortalPage extends React.Component {
                             } else if (this.state.formType === 'register') {
                                 return <RegisterForm switch={this.switchLogin} />;
                             } else if (this.state.formType === 'validation') {
-                                return <ValidationForm switch={this.switchLogin} />;
+                                return <ValidationForm switch={this.switchLogin} retryTime={this.state.retryTime} send={this.getValidate} validate={this.sendValidate}/>;
                             }
                         })()}
                     </div>
@@ -208,9 +230,6 @@ class RegisterFormBuilder extends React.Component {
 }
 
 class ValidationForm extends React.Component {
-    state = {
-        retryDisabled: false,
-    };
     render() {
         return (
             <div class="portal-validate">
@@ -220,8 +239,8 @@ class ValidationForm extends React.Component {
                 </div>
                 <div class="portal-validate-input">
                     <Input />
-                    <Button type="primary" disabled={this.state.retryDisabled}>
-                        重新发送
+                    <Button type="primary" disabled={this.props.retryTime <= 0} onClick={this.props.send}>
+                        {this.props.retryTime <= 0 ? '重新发送' : `${this.props.retryTime} 秒`}
                     </Button>
                 </div>
                 <div className="portal-form-action">
