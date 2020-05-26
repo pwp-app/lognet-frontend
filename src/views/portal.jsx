@@ -82,7 +82,7 @@ class PortalPage extends React.Component {
                             } else if (this.state.formType === 'register') {
                                 return <RegisterForm switch={this.switchLogin} />;
                             } else if (this.state.formType === 'validation') {
-                                return <ValidationForm switch={this.switchLogin} retryTime={this.state.retryTime} send={this.getValidate} validate={this.sendValidate} />;
+                                return <ValidationForm switch={this.switchLogin} retryTime={this.state.validationRetryTime} send={this.getValidate} validate={this.sendValidate} />;
                             }
                         })()}
                     </div>
@@ -181,9 +181,7 @@ class RegisterFormBuilder extends React.Component {
     onFinish = (values) => {
         axios
             .post('/portal/register', {})
-            .then(res => {
-                
-            })
+            .then((res) => {})
             .catch(() => {
                 message.error('网络连接失败');
                 this.setState({
@@ -255,12 +253,12 @@ class RegisterFormBuilder extends React.Component {
 class ValidationForm extends React.Component {
     render() {
         return (
-            <div class="portal-validate">
-                <div class="portal-validate-text">
+            <div className="portal-validate">
+                <div className="portal-validate-text">
                     <p>我们已经向您的邮箱发送了验证码，</p>
                     <p>请在下方输入您收到的验证码：</p>
                 </div>
-                <div class="portal-validate-input">
+                <div className="portal-validate-input">
                     <Input />
                     <Button type="primary" disabled={this.props.retryTime <= 0} onClick={this.props.send}>
                         {this.props.retryTime <= 0 ? '重新发送' : `${this.props.retryTime} 秒`}
