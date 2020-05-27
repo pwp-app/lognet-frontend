@@ -1,4 +1,4 @@
-export const user = {
+export default {
     state: {
         uid: null,
         username: null,
@@ -8,6 +8,14 @@ export const user = {
     reducers: {
         setUser(state, payload) {
             return payload;
+        },
+        setEmail(state, payload) {
+            state.email = payload;
+            return state;
+        },
+        setRole(state, payload) {
+            state.role = payload;
+            return state;
         }
     }
 }

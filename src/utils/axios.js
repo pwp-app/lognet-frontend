@@ -1,17 +1,7 @@
-import _axios from 'axios';
-import qs from 'qs';
+import axios from 'axios';
 
-const axios = _axios.create();
-
-axios.defaults.baseURL = '';
+axios.defaults.baseURL = '/api';
 axios.defaults.withCredentials = true;
 axios.defaults.timeout = 10000;
-axios.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded';
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-axios.defaults.transformRequest = [function (data) {
-    return qs.stringify(data, {
-        arrayFormat: 'brackets'
-    });
-}];
 
 export default axios;
