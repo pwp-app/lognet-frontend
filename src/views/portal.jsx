@@ -113,7 +113,7 @@ class PortalPage extends React.Component {
                 if (res.data.code === 200) {
                     if (this.state.from === 'login') {
                         // 验证成功，放行到主界面
-
+                        message.success('验证成功');
                     } else if (this.state.from === 'register') {
                         message.success('验证成功，请输入您的凭据登录系统');
                         this.setState({

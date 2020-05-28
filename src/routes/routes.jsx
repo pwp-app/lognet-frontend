@@ -3,6 +3,7 @@ import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 // routes
 import routes from './site';
+import MainLayout from '../views/main';
 
 class Routes extends React.Component {
     renderRoutes = (routes, parentPath) => {
@@ -22,6 +23,7 @@ class Routes extends React.Component {
                 <CSSTransition classNames="fade" appear={true} key={location.pathname} timeout={300} unmountOnExit>
                     <Switch location={location}>
                         {this.renderRoutes(routes)}
+                        <Route key="/app" path="/app" component={MainLayout}></Route>
                         <Redirect to="/404" />
                     </Switch>
                 </CSSTransition>
