@@ -1,0 +1,39 @@
+.iconcard {
+    .ant-card-body {
+        display: flex;
+        flex-direction: row;
+        padding: 0;
+        .iconcard-left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            background: #f1b50e;
+            color: white;
+            font-size: 28px;
+            margin: 18px 20px;
+            border-radius: 4px;
+            box-shadow: 0 0px 4px lighten(#f1b50e, 25%);
+        }
+        .iconcard-right {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transform: translateY(3px);
+        }
+        .iconcard-right-desc {
+            color: #909399;
+            letter-spacing: 0.05em;
+            font-size: 14px;
+        }
+        .iconcard-right-num {
+            color: #606266;
+            font-size: 26px;
+            font-family: 'Nunito';
+            font-weight: 700;
+            margin-top: 0px;
+        }
+    }
+}

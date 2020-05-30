@@ -1,14 +1,23 @@
 .nav-title {
     text-align: center;
     margin: 12px 0;
+    display: flex;
+    align-items: center;
+    padding-left: 22px;
+    transition: all 200ms ease-in-out;
     img {
         width: 40px;
     }
     span {
         margin-left: 12px;
-        font-size: 16px;
+        font-size: 20px;
         font-weight: 600;
         color: @color-primary-darken;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.075em;
     }
+}
+
+.nav-title-collapsed {
+    padding-left: 0;
+    justify-content: center;
 }

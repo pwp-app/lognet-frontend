@@ -34,7 +34,7 @@ class MainLayout extends React.Component {
             <BrowserRouter>
                 <Layout className="container-main" style={{ minHeight: '100vh' }}>
                     <Sider className="site-layout-background site-nav" trigger={null} collapsible collapsed={this.state.collapsed}>
-                        <div className="nav-title">
+                        <div className={['nav-title', this.state.collapsed ? 'nav-title-collapsed' : null].join(' ')}>
                             <img src={logo} alt="logo"/>
                             {this.state.collapsed ? null : <span>Lognet</span>}
                         </div>

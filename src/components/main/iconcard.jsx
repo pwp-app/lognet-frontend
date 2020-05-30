@@ -6,17 +6,15 @@ class IconCard extends React.Component {
     render() {
         return (
             <Col span={this.props.span}>
-                <Card className="icon-card">
-                    <div className="icon-card-left">
-                        <div className="icon-card-left-inner">
-                            <Icon type={this.props.icon}></Icon>
-                        </div>
+                <Card className="iconcard">
+                    <div className="iconcard-left">
+                        <Icon type={this.props.icon}></Icon>
                     </div>
-                    <div className="icon-card-right">
-                        <div className="icon-card-right-desc">
+                    <div className="iconcard-right">
+                        <div className="iconcard-right-desc">
                             <span>{this.props.desc}</span>
                         </div>
-                        <div className="icon-card-right-num">
+                        <div className="iconcard-right-num">
                             <span>{this.props.number}</span>
                         </div>
                     </div>
