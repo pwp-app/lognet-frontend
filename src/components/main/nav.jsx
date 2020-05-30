@@ -21,7 +21,7 @@ class Nav extends React.Component {
                     </Menu.SubMenu>
                 )
             }
-            let path = parentPath ? parentPath + item.path : item.path;
+            let path = parentPath ? parentPath + item.path : '/app' + item.path;
             return (
                 <Menu.Item title={item.title} key={path}>
                     <Link to={path}>

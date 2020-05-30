@@ -1,14 +1,15 @@
 import React from 'react';
 import { Layout } from 'antd';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, BrowserRouter } from 'react-router-dom';
 import Nav from '../components/main/nav';
-import BreadCrumb from '../components/main/breadcrumb';
 import User from '../components/main/user';
 import routes from '../routes/pages';
 import NotFoundPage from './404';
+import BreadCrumbPart from '../components/main/breadcrumb';
+import logo from '../assets/image/lognet.png';
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Sider, Header, Content } = Layout;
 
 class MainLayout extends React.Component {
     state = {
@@ -24,49 +25,46 @@ class MainLayout extends React.Component {
             if (route.children) {
                 return this.renderRoutes(route.children, route.path);
             }
-            let path = parentPath ? parentPath + route.path : route.path;
+            let path = parentPath ? parentPath + route.path : '/app' + route.path;
             return <Route exact key={path} path={path} component={route.component} />;
         });
     };
     render() {
         return (
-            <Layout className="container-main" style={{ minHeight: '100vh' }}>
-                <Sider className="site-nav" trigger={null} collapsible collapsed={this.state.collapsed}>
-                    <div className="nav-title">
-                        <span>Antd{this.state.collapsed ? '' : ' Platform'}</span>
-                    </div>
-                    <Nav />
-                </Sider>
-                <Layout className="container-main-pages">
-                    <Header className="site-background site-header" style={{ padding: 0 }}>
-                        <span className="collapse-trigger">
-                            {React.createElement(this.state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
-                                className: 'collapse-trigger-icon',
-                                onClick: this.toggle,
-                            })}
-                        </span>
-                        <div className="site-header-right">
-                            <User />
+            <BrowserRouter>
+                <Layout className="container-main" style={{ minHeight: '100vh' }}>
+                    <Sider className="site-layout-background site-nav" trigger={null} collapsible collapsed={this.state.collapsed}>
+                        <div className="nav-title">
+                            <img src={logo} alt="logo"/>
+                            {this.state.collapsed ? null : <span>Lognet</span>}
                         </div>
-                    </Header>
-                    <Content
-                        style={{
-                            margin: '0 24px',
-                        }}
-                    >
-                        <div className="content-header">
-                            <Route component={BreadCrumb} />
-                        </div>
-                        <div className="site-background container-content">
+                        <Nav routes={routes} />
+                    </Sider>
+                    <Layout className="container-main-pages">
+                        <Header className="site-layout-background site-header" style={{ padding: 0 }}>
+                            <div className="site-header-left">
+                                <span className="collapse-trigger">
+                                    {React.createElement(this.state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+                                        className: 'collapse-trigger-icon',
+                                        onClick: this.toggle,
+                                    })}
+                                </span>
+                                <BreadCrumbPart routes={routes} />
+                            </div>
+                            <div className="site-header-right">
+                                <User />
+                            </div>
+                        </Header>
+                        <Content className="site-content">
                             <Switch>
                                 {this.renderRoutes(routes)}
                                 <Route exact path="/app/404" component={NotFoundPage} />
                                 <Redirect to="/app/404" />
                             </Switch>
-                        </div>
-                    </Content>
+                        </Content>
+                    </Layout>
                 </Layout>
-            </Layout>
+            </BrowserRouter>
         );
     }
 }

@@ -1,8 +1,10 @@
 import React from 'react';
 import * as Icon from '@ant-design/icons';
 
-const DynamicIcon = (type) => {
-    return React.createElement(Icon[type]);
-};
+class DynamicIcon extends React.Component {
+    render() {
+        return React.createElement(Icon[this.props.type]);
+    }
+}
 
 export default DynamicIcon;
