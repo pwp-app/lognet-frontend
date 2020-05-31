@@ -47,7 +47,7 @@ class Nav extends React.Component {
     }
     render() {
         return (
-            <Menu mode="inline"
+            <Menu mode="inline" theme="dark"
                 selectedKeys ={[this.state.activeKey]}
                 onClick={this.handleClick}>
                 {this.renderMenu(this.props.routes)}

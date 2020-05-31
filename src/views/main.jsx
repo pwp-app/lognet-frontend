@@ -8,7 +8,6 @@ import User from '../components/main/user';
 import routes from '../routes/pages';
 import NotFoundPage from './404';
 import BreadCrumbPart from '../components/main/breadcrumb';
-import logo from '../assets/image/lognet.png';
 // utils
 import axios from '../utils/axios';
 
@@ -76,10 +75,6 @@ class MainLayout extends React.Component {
             <BrowserRouter>
                 <Layout className="container-main" style={{ minHeight: '100vh' }}>
                     <Sider className="site-layout-background site-nav" trigger={null} collapsible collapsed={this.state.collapsed}>
-                        <div className={['nav-title', this.state.collapsed ? 'nav-title-collapsed' : null].join(' ')}>
-                            <img src={logo} alt="logo"/>
-                            {this.state.collapsed ? null : <span>Lognet</span>}
-                        </div>
                         <Nav routes={routes} />
                     </Sider>
                     <Layout className="container-main-pages">

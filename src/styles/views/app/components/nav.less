@@ -1,23 +1,13 @@
-.nav-title {
-    text-align: center;
-    margin: 12px 0;
-    display: flex;
-    align-items: center;
-    padding-left: 22px;
-    transition: all 200ms ease-in-out;
-    img {
-        width: 40px;
-    }
-    span {
-        margin-left: 12px;
-        font-size: 20px;
-        font-weight: 600;
-        color: @color-primary-darken;
-        letter-spacing: 0.075em;
-    }
-}
+@sidebar-background: rgb(84, 92, 100);
 
-.nav-title-collapsed {
-    padding-left: 0;
-    justify-content: center;
+.site-nav {
+    background: @sidebar-background;
+    .ant-menu {
+        background: @sidebar-background;
+        .ant-menu-item {
+            height: 48px;
+            line-height: 48px;
+            margin: 0;
+        }
+    }
 }
