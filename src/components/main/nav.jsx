@@ -29,7 +29,7 @@ class Nav extends React.Component {
                     </Link>
                 </Menu.Item>
             )
-        })
+        });
     }
     handleClick = e => {
         this.setState({
@@ -38,8 +38,8 @@ class Nav extends React.Component {
     }
     componentDidMount() {
         let path = window.location.pathname;
-        if (!path.endsWith('/')) {
-            path += '/';
+        if (path.endsWith('/')) {
+            path = path.substring(0, path.length - 1);
         }
         this.setState({
             activeKey: path,

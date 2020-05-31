@@ -2,7 +2,7 @@ import SitesPage from '../views/app/sites';
 
 export default [
     {
-        path: '/',
+        path: '',
         title: '仪表盘',
         icon: 'DashboardOutlined',
         auth: 'user',
