@@ -1,4 +1,5 @@
 import SitesPage from '../views/app/sites';
+import UserSettingsPage from '../views/app/usersettings';
 
 export default [
     {
@@ -18,6 +19,7 @@ export default [
         path: '/user',
         title: '用户设置',
         icon: 'SettingOutlined',
+        component: UserSettingsPage,
         auth: 'user',
     }
 ]

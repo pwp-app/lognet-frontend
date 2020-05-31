@@ -1,0 +1,43 @@
+.setting-iconcard {
+    height: 148px;
+    .ant-card-body {
+        padding: 0;
+        display: flex;
+    }
+    &-icon {
+        width: 148px;
+        height: 148px;
+        background: @color-primary;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        order: 0;
+        .anticon {
+            color: white;
+            font-size: 48px;
+        }
+    }
+    &-main {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        padding: 18px 24px;
+        order: 1;
+        .setting-iconcard-title {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        .setting-iconcard-action {
+            color: @color-primary-darken;
+            margin-top: 4px;
+            transition: all 150ms ease-in-out;
+            .anticon {
+                margin-left: 6px;
+            }
+        }
+        .setting-iconcard-action:hover {
+            color: lighten(@color-primary, 12.5%);
+            cursor: pointer;
+        }
+    }
+}

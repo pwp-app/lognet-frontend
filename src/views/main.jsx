@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout } from 'antd';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
-import { Route, Switch, Redirect, BrowserRouter } from 'react-router-dom';
+import { Route, Switch, Redirect, BrowserRouter, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Nav from '../components/main/nav';
 import User from '../components/main/user';
@@ -32,13 +32,21 @@ class MainLayout extends React.Component {
         });
     };
     fetchUserInfo = async () => {
-        let res = await axios.get('/user/fetchInfo');
-        if (res.status === 200 && res.data && res.data.code === 200 && res.data.data) {
-            this.props.setUser(res.data.data);
+        let res
+        try {
+            res = await axios.get('/user/fetchInfo');
+        } catch (err) {
+            this.props.history.push('/portal');
+            return;
         }
-        this.setState({
-            userInfoFetched: true,
-        });
+        if (res.data && res.data.code === 200 && res.data.data) {
+            this.props.setUser(res.data.data);
+            this.setState({
+                userInfoFetched: true,
+            });
+        } else {
+            this.props.history.push('/portal');
+        }
     }
     renderRoutes = (routes, parentPath) => {
         return routes.map((route) => {
@@ -106,4 +114,4 @@ class MainLayout extends React.Component {
     }
 }
 
-export default connect(mapState, mapDispatch)(MainLayout);
+export default connect(mapState, mapDispatch)(withRouter(MainLayout));

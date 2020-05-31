@@ -1,0 +1,25 @@
+.setting-card {
+    .ant-card-head-title {
+        font-size: 15px;
+    }
+    &-content {
+        font-size: 15px;
+        p {
+            margin-bottom: 12px;
+        }
+    }
+    &-action {
+        width: max-content;
+        margin-top: 24px;
+        color: @color-primary-darken;
+        letter-spacing: 0.05em;
+        transition: all 150ms ease-in-out;
+        .anticon {
+            margin-left: 6px;
+        }
+    }
+    &-action:hover {
+        color: lighten(@color-primary, 12.5%);
+        cursor: pointer;
+    }
+}
