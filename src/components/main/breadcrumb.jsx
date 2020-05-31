@@ -26,7 +26,6 @@ class BreadCrumbPart extends React.Component {
         let path = window.location.pathname.replace('/app', '').split("/");
         let ret = path.map(item => {
             let p = item.length > 0 ? `/${item}` : null;
-            console.log(this.getRouteTitle(routes, p));
             if (p) {
                 return <Breadcrumb.Item key={p}>{this.getRouteTitle(routes, p)}</Breadcrumb.Item>;
             }
