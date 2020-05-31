@@ -37,8 +37,12 @@ class Nav extends React.Component {
         });
     }
     componentDidMount() {
+        let path = window.location.pathname;
+        if (!path.endsWith('/')) {
+            path += '/';
+        }
         this.setState({
-            activeKey: window.location.pathname
+            activeKey: path,
         });
     }
     render() {

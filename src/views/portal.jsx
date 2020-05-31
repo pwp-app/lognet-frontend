@@ -60,8 +60,9 @@ class PortalPage extends React.Component {
             validateFrom: from,
         });
         if (from === 'login') {
-            // 已经不是Guest，不需要验证
+            // 已经不是Guest，不需要验证，直接放行
             if (this.props.user.role && this.props.user.role.level !== 0) {
+                this.props.history.push('/app');
                 return;
             }
         }
@@ -114,6 +115,7 @@ class PortalPage extends React.Component {
                     if (this.state.from === 'login') {
                         // 验证成功，放行到主界面
                         message.success('验证成功');
+                        this.props.history.push('/app');
                     } else if (this.state.from === 'register') {
                         message.success('验证成功，请输入您的凭据登录系统');
                         this.setState({

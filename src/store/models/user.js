@@ -1,10 +1,5 @@
 export default {
-    state: {
-        uid: null,
-        username: null,
-        email: null,
-        role: null,
-    },
+    state: null,
     reducers: {
         setUser(state, payload) {
             return payload;

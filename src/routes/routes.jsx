@@ -1,9 +1,14 @@
 import React from 'react';
 import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import { connect } from 'react-redux';
 // routes
 import routes from './site';
 import MainLayout from '../views/main';
+
+const mapState = state => ({
+    user: state.user,
+});
 
 class Routes extends React.Component {
     renderRoutes = (routes, parentPath) => {
@@ -14,15 +19,14 @@ class Routes extends React.Component {
             let path = parentPath ? parentPath + route.path : route.path;
             return <Route exact key={path} path={path} component={route.component} />;
         });
-    };
-
+    }
     render() {
         const { location } = this.props;
         return (
             <TransitionGroup>
                 <CSSTransition classNames="fade" appear={true} key={location.pathname} timeout={300} unmountOnExit>
                     <Switch location={location}>
-                        {this.renderRoutes(routes)}
+                        { this.renderRoutes(routes) }
                         <Route key="/app" path="/app" component={MainLayout}></Route>
                         <Redirect to="/404" />
                     </Switch>
@@ -32,4 +36,4 @@ class Routes extends React.Component {
     }
 }
 
-export default withRouter(Routes);
+export default connect(mapState, null)(withRouter(Routes));
