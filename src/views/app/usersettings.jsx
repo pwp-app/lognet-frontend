@@ -1,9 +1,15 @@
 import React from 'react';
-import { Row, Col, Card, Table, message } from 'antd';
+import { Row, Col, Card, Table, Modal, message, Input, Form } from 'antd';
 import { connect } from 'react-redux';
 import SettingCard from '../../components/main/settingcard';
 import SettingIconCard from '../../components/main/settingiconcard';
 import axios from '../../utils/axios';
+import sha256 from 'crypto-js/sha256';
+
+const layout = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 18 },
+};
 
 const mapState = (state) => ({
     user: state.user,
@@ -32,16 +38,53 @@ const logTableColumns = [
 ];
 
 class UserSettingsPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.modPasswordForm = React.createRef();
+    }
     state = {
         recentLogs: [],
+        changeBindVisible: false,
+        modPasswordVisible: false,
     };
+    openGravatar = () => {
+        window.open('https://en.gravatar.com/emails/');
+    };
+    // mod password
+    modPasswordOk = () => {
+        this.modPasswordForm.current.submit();
+    }
+    modPasswordSubmit = (values) => {
+        values.oldPassword = sha256(values.oldPassword).toString();
+        values.newPassword = sha256(values.newPassword).toString();
+        values.newConfirmPassword = sha256(values.newConfirmPassword).toString();
+        axios.post('/user/changePassword', values).then((res) => {
+            if (res.data.code === 200) {
+                message.success('修改成功，请使用密码重新登录');
+                this.setState({
+                    modPasswordVisible: false,
+                });
+                // 置为初始态
+                this.props.setUser(null);
+                window.location.href='/portal'
+            } else {
+                message.error(res.data.message);
+            }
+        }).catch(() => {
+            message.error('提交失败');
+        });
+    }
     componentDidMount = () => {
         axios
             .get('/user/fetchLoginLog')
             .then((res) => {
                 if (res.data && res.data.code === 200) {
+                    let data = res.data.data;
+                    for (let item of data) {
+                        item.key = item.createTime;
+                    }
                     this.setState({
-                        recentLogs: res.data.data,
+                        recentLogs: data,
                     });
                 } else {
                     message.error('获取登录记录失败');
@@ -76,11 +119,22 @@ class UserSettingsPage extends React.Component {
                                     <p>如果您需要设置您的头像，需要前往 Gravatar 进行设置。</p>
                                 </>
                             }
+                            action={this.openGravatar}
                             actionName="立即前往"
                         />
                     </Col>
                     <Col span={12}>
-                        <SettingIconCard icon="LockFilled" title="修改密码" content={<p>我们建议您定期修改密码来提升帐号的安全保护强度</p>} actionName="立即修改" />
+                        <SettingIconCard
+                            icon="LockFilled"
+                            title="修改密码"
+                            content={<p>我们建议您定期修改密码来提升帐号的安全保护强度</p>}
+                            action={() => {
+                                this.setState({
+                                    modPasswordVisible: true,
+                                });
+                            }}
+                            actionName="立即修改"
+                        />
                     </Col>
                     <Col span={12}></Col>
                     <Col span={24}>
@@ -89,6 +143,72 @@ class UserSettingsPage extends React.Component {
                         </Card>
                     </Col>
                 </Row>
+                <Modal
+                    title="更改绑定邮箱"
+                    visible={this.state.changeBindVisible}
+
+                    >
+
+                </Modal>
+                <Modal
+                    title="修改密码"
+                    visible={this.state.modPasswordVisible}
+                    onOk={this.modPasswordOk}
+                    onCancel={() => {
+                        this.setState({ modPasswordVisible: false });
+                    }}
+                >
+                    <Form {...layout} ref={this.modPasswordForm} name="modPassword" labelAlign="left" onFinish={this.modPasswordSubmit}>
+                        <Form.Item
+                            name="oldPassword"
+                            label="旧密码"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: '请输入旧密码',
+                                },
+                            ]}
+                        >
+                            <Input.Password placeholder="请输入旧密码" />
+                        </Form.Item>
+                        <Form.Item
+                            name="newPassword"
+                            label="新密码"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: '请输入新密码',
+                                },
+                                {
+                                    min: 6,
+                                    message: '密码不能少于6个字符',
+                                },
+                            ]}
+                        >
+                            <Input.Password placeholder="请输入新密码" />
+                        </Form.Item>
+                        <Form.Item
+                            name="newConfirmPassword"
+                            label="确认密码"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: '请再次输入密码',
+                                },
+                                ({ getFieldValue }) => ({
+                                    validator(rule, value) {
+                                        if (!value || getFieldValue('newPassword') === value) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject('两次输入的密码不一致');
+                                    },
+                                }),
+                            ]}
+                        >
+                            <Input.Password placeholder="请输入确认密码" />
+                        </Form.Item>
+                    </Form>
+                </Modal>
             </div>
         );
     }

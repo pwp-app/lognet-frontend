@@ -15,8 +15,8 @@ class SitesPage extends React.Component {
             <div className="page-sites">
                 <Row gutter={16}>
                     <IconCard span={8} icon="CloudServerOutlined" desc="站点数" number={this.state.stats.total}></IconCard>
-                    <IconCard span={8} icon="BugOutlined" desc="近 7 天错误提交量" number={this.state.stats.recentWeekSubmit}></IconCard>
-                    <IconCard span={8} icon="FileOutlined" desc="近 30 天错误提交量" number={this.state.stats.recentMonthSubmit}></IconCard>
+                    <IconCard span={8} icon="BugOutlined" desc="近 7 天错误日志提交量" number={this.state.stats.recentWeekSubmit}></IconCard>
+                    <IconCard span={8} icon="FileOutlined" desc="近 7 天普通日志提交量" number={this.state.stats.recentMonthSubmit}></IconCard>
                 </Row>
                 <Row>
 

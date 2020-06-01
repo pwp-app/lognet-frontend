@@ -18,7 +18,7 @@ class UserDropdown extends React.Component {
         axios.get('/portal/logout').then((res) => {
             if (res.data && res.data.code === 200) {
                 message.success('登出成功');
-                this.props.history.push('');
+                this.props.history.push('/');
             } else {
                 message.error('登出失败，' + res.data.message);
             }
