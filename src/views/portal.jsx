@@ -17,11 +17,11 @@ const tailLayout = {
     wrapperCol: { span: 24 },
 };
 
-const mapState = state => ({
+const mapState = (state) => ({
     user: state.user,
 });
 
-const mapDispatch = ({ user: { setUser, setEmail }}) => ({
+const mapDispatch = ({ user: { setUser, setEmail } }) => ({
     setUser: (user) => setUser(user),
     setEmail: (email) => setEmail(email),
 });
@@ -36,12 +36,12 @@ class PortalPage extends React.Component {
     };
     componentDidMount = () => {
         this.getToken();
-    }
+    };
     getToken = async () => {
         this.setState({
-            token: await this.props.googleReCaptchaProps.executeRecaptcha('login')
+            token: await this.props.googleReCaptchaProps.executeRecaptcha('login'),
         });
-    }
+    };
     switchRegister = () => {
         this.setState({
             formType: 'register',
@@ -54,6 +54,11 @@ class PortalPage extends React.Component {
     };
     backHome = () => {
         this.props.history.push('/');
+    };
+    toForget = () => {
+        this.setState({
+            formType: 'forget',
+        });
     };
     checkValidate = (from) => {
         this.setState({
@@ -88,6 +93,7 @@ class PortalPage extends React.Component {
         axios
             .get('/portal/sendValidation', {
                 params: {
+                    type: 'normal',
                     email: this.props.user.email,
                 },
             })
@@ -97,7 +103,7 @@ class PortalPage extends React.Component {
                 }
             })
             .catch(() => {
-                message.error('连接错误，无法获取验证码');
+                message.error('和服务器通讯失败，无法获取验证码');
                 this.setState({
                     validateRetryTime: 0,
                 });
@@ -119,11 +125,12 @@ class PortalPage extends React.Component {
                     } else if (this.state.from === 'register') {
                         message.success('验证成功，请输入您的凭据登录系统');
                         this.setState({
-                            formType: 'login'
+                            formType: 'login',
                         });
                     }
                 }
-            }).catch(() => {
+            })
+            .catch(() => {
                 message.error('和服务器通讯失败');
             });
     };
@@ -143,6 +150,8 @@ class PortalPage extends React.Component {
                                     return '注册';
                                 } else if (this.state.formType === 'validation') {
                                     return '验证';
+                                } else if (this.state.formType === 'forget') {
+                                    return '忘记密码';
                                 }
                             })()}
                         </div>
@@ -150,14 +159,21 @@ class PortalPage extends React.Component {
                     <div className="portal-form">
                         {(() => {
                             if (this.state.formType === 'login') {
-                                return <LoginForm switch={this.switchRegister} checkValidate={this.checkValidate} token={this.state.token} getToken={this.getToken}/>;
+                                return <LoginForm switch={this.switchRegister} checkValidate={this.checkValidate} token={this.state.token} getToken={this.getToken} />;
                             } else if (this.state.formType === 'register') {
-                                return <RegisterForm switch={this.switchLogin} checkValidate={this.checkValidate} token={this.state.token} getToken={this.getToken}/>;
+                                return <RegisterForm switch={this.switchLogin} checkValidate={this.checkValidate} token={this.state.token} getToken={this.getToken} />;
                             } else if (this.state.formType === 'validation') {
                                 return <ValidationForm switch={this.state.validateFrom === 'login' ? this.switchLogin : this.switchRegister} retryTime={this.state.validateRetryTime} send={this.getValidate} validate={this.sendValidate} submit={this.sendValidate} />;
+                            } else if (this.state.formType === 'forget') {
+                                return <ForgetPasswordForm switch={this.switchLogin} />;
                             }
                         })()}
                     </div>
+                    {this.state.formType === 'login' ? (
+                        <div className="portal-forget" onClick={this.toForget}>
+                            <span>忘记密码？</span>
+                        </div>
+                    ) : null}
                     <div className="portal-back" onClick={this.backHome}>
                         <span>&lt;-&nbsp;&nbsp;返回主页</span>
                     </div>
@@ -236,7 +252,7 @@ class LoginFormBuilder extends React.Component {
                     <Input placeholder="用户名或邮箱" />
                 </Form.Item>
                 <Form.Item name="password" rules={[{ required: true, message: '请输入您的密码' }]}>
-                    <Input.Password placeholder="密码" />
+                    <Input.Password placeholder="密码" onPressEnter={this.submitForm} />
                 </Form.Item>
                 <Form.Item {...tailLayout} name="rememberMe" valuePropName="checked">
                     <Checkbox>30 天免登录</Checkbox>
@@ -313,7 +329,7 @@ class RegisterFormBuilder extends React.Component {
                         { max: 30, message: '用户名最多为30个字符' },
                     ]}
                 >
-                    <Input placeholder="用户名"/>
+                    <Input placeholder="用户名" />
                 </Form.Item>
                 <Form.Item
                     name="password"
@@ -325,7 +341,7 @@ class RegisterFormBuilder extends React.Component {
                         },
                     ]}
                 >
-                    <Input.Password placeholder="密码"/>
+                    <Input.Password placeholder="密码" />
                 </Form.Item>
                 <Form.Item
                     name="confirmPassword"
@@ -350,7 +366,7 @@ class RegisterFormBuilder extends React.Component {
                         { pattern: /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/, message: '请输入正确的邮箱地址' },
                     ]}
                 >
-                    <Input placeholder="电子邮箱"/>
+                    <Input placeholder="电子邮箱" />
                 </Form.Item>
                 <div className="portal-form-action">
                     <Button size="large" shape="round" onClick={this.props.switch}>
@@ -418,6 +434,186 @@ class ValidationForm extends React.Component {
                     <Button type="primary" size="large" shape="round" onClick={this.submit}>
                         提交
                     </Button>
+                </div>
+            </div>
+        );
+    }
+}
+
+class ForgetPasswordForm extends React.Component {
+    constructor(props) {
+        super(props);
+        this.mailForm = React.createRef();
+        this.mainForm = React.createRef();
+    }
+    state = {
+        mailSent: false,
+        email: null,
+        retryTime: 0,
+    };
+    send = () => {
+        this.mailForm.current.submit();
+    };
+    onMailFinish = (values) => {
+        this.setState({
+            retryTime: 60,
+        });
+        this.validateInterval = setInterval(() => {
+            this.setState({
+                retryTime: this.state.retryTime - 1,
+            });
+            if (this.state.retryTime <= 0) {
+                this.setState({
+                    retryTime: 0,
+                });
+                clearInterval(this.validateInterval);
+            }
+        }, 1000);
+        axios
+            .get('/portal/sendValidation', {
+                params: {
+                    type: 'forget',
+                    ...values,
+                },
+            })
+            .then((res) => {
+                if (res.data && res.data.code === 200) {
+                    message.success('发送成功，请到您填写的邮箱内查收验证码');
+                    this.setState({
+                        mailSent: true,
+                        email: values.email,
+                    });
+                } else {
+                    message.error(res.data.message);
+                }
+            })
+            .catch(() => {
+                message.error('和服务器通讯失败，无法获取验证码');
+                this.setState({
+                    retryTime: 0,
+                });
+                clearInterval(this.validateInterval);
+            });
+    };
+    submit = () => {
+        this.mainForm.current.submit();
+    };
+    onMainFormFinish = (values) => {
+        values.newPassword = sha256(values.newPassword).toString();
+        values.newConfirmPassword = sha256(values.newConfirmPassword).toString();
+        axios
+            .post('/portal/validateForget', {
+                ...values,
+                email: this.state.email,
+            })
+            .then((res) => {
+                if (res.data && res.data.code === 200) {
+                    message.success('密码重置成功，请使用新密码登录');
+                    this.props.switch();
+                } else {
+                    message.error(res.data.message);
+                }
+            })
+            .catch(() => {
+                message.error('和服务器通讯失败，请重试');
+            });
+    };
+    render() {
+        return (
+            <div className="portal-recover">
+                <div className="portal-recover-text">
+                    <p>请输入您绑定的电子邮箱：</p>
+                </div>
+                <div className="portal-recover-mail">
+                    <Form ref={this.mailForm} layout="inline" onFinish={this.onMailFinish}>
+                        <Form.Item
+                            name="email"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: '请填写电子邮箱',
+                                },
+                                {
+                                    pattern: /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/,
+                                    message: '请输入正确的邮箱地址',
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Form>
+                    <Button type="primary" disabled={this.state.retryTime > 0} onClick={this.send}>
+                        {this.state.retryTime <= 0 ? '发送' : `${this.state.retryTime} 秒`}
+                    </Button>
+                </div>
+                {this.state.mailSent ? (
+                    <div className="portal-recover-form">
+                        <Form {...layout} ref={this.mainForm} onFinish={this.onMainFormFinish}>
+                            <Form.Item
+                                name="code"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: '请填写验证码',
+                                    },
+                                    {
+                                        pattern: /^\d{6}$/,
+                                        message: '请填写正确的验证码',
+                                        validateTrigger: 'blur',
+                                    },
+                                ]}
+                                getValueFromEvent={(e) => {
+                                    return e.target.value.replace(/\D/g, '');
+                                }}
+                            >
+                                <Input maxLength="6" placeholder="邮箱验证码" />
+                            </Form.Item>
+                            <Form.Item
+                                name="newPassword"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: '请输入新密码',
+                                    },
+                                    {
+                                        min: 6,
+                                        message: '密码不能少于6个字符',
+                                    },
+                                ]}
+                            >
+                                <Input.Password placeholder="新密码" />
+                            </Form.Item>
+                            <Form.Item
+                                name="newConfirmPassword"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: '请再次输入密码',
+                                    },
+                                    ({ getFieldValue }) => ({
+                                        validator(rule, value) {
+                                            if (!value || getFieldValue('newPassword') === value) {
+                                                return Promise.resolve();
+                                            }
+                                            return Promise.reject('两次输入的密码不一致！');
+                                        },
+                                    }),
+                                ]}
+                            >
+                                <Input.Password placeholder="确认密码" />
+                            </Form.Item>
+                        </Form>
+                    </div>
+                ) : null}
+                <div className="portal-form-action">
+                    <Button size="large" shape="round" onClick={this.props.switch}>
+                        返回
+                    </Button>
+                    {this.state.mailSent ? (
+                        <Button type="primary" size="large" shape="round" onClick={this.submit}>
+                            提交
+                        </Button>
+                    ) : null}
                 </div>
             </div>
         );

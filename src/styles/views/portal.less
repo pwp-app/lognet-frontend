@@ -25,26 +25,40 @@
             text-align: center;
             font-size: 24px;
             font-weight: 600;
-            letter-spacing: 0.125em;
+            letter-spacing: 0.1em;
             color: @color-primary-darken;
             margin: 14px 0;
         }
     }
     .portal-form {
-        .portal-form-action {
+        &-action {
             margin: 36px 0 32px 0;
             text-align: center;
         }
         .ant-btn {
             font-size: 14px;
             letter-spacing: 0.05em;
+            margin-left: 16px;
         }
         .ant-btn:first-child {
-            margin-right: 16px;
+            margin-left: 0
         }
         .ant-form-item-label {
             user-select: none;
         }
+    }
+    .portal-forget {
+        margin: 16px auto -32px auto;
+        width: max-content;
+        color: #bfbfbf;
+        transition: 200ms;
+        user-select: none;
+        font-size: 14px;
+        text-align: center;
+    }
+    .portal-forget:hover {
+        color: #8c8c8c;
+        cursor: pointer;
     }
     .portal-back {
         margin: 56px auto 42px auto;
@@ -75,7 +89,7 @@
             }
         }
     }
-    .portal-validate {
+    .portal-recover {
         &-text {
             font-size: 17px;
             font-weight: 600;
@@ -95,6 +109,36 @@
                 .ant-form-item {
                     width: 100%;
                 }
+            }
+            .ant-btn {
+                margin-left: 0;
+            }
+        }
+    }
+    .portal-recover {
+        &-text {
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 18px;
+            p {
+                line-height: 36px;
+                margin: 0;
+                color: @color-primary-darken;
+            }
+        }
+        &-mail {
+            display: flex;
+            margin-bottom: 24px;
+            .ant-form {
+                flex-grow: 1;
+                margin-right: 8px;
+                .ant-form-item {
+                    width: 100%;
+                }
+            }
+            .ant-btn {
+                margin-left: 0;
             }
         }
     }
