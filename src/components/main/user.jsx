@@ -22,7 +22,7 @@ class UserDropdown extends React.Component {
             } else {
                 message.error('登出失败，' + res.data.message);
             }
-        }).catch(() => {
+        }, () => {
             message.error('登出失败');
         });
     }

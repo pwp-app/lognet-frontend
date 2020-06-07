@@ -22,16 +22,19 @@ class SiteModal extends React.Component {
         desc: '',
     };
     show = (mode, record) => {
-        this.setState({
-            mode: mode,
-            visible: true,
-            domain: record ? record.domain : '',
-            desc: record ? record.description : '',
-        }, () => {
-            if (this.form.current) {
-                this.form.current.resetFields();
+        this.setState(
+            {
+                mode: mode,
+                visible: true,
+                domain: record ? record.domain : '',
+                desc: record ? record.description : '',
+            },
+            () => {
+                if (this.form.current) {
+                    this.form.current.resetFields();
+                }
             }
-        });
+        );
     };
     submitForm = () => {
         this.form.current.submit();
@@ -50,8 +53,7 @@ class SiteModal extends React.Component {
                     } else {
                         message.error(res.data.message);
                     }
-                })
-                .catch((err) => {
+                }, (err) => {
                     console.error(err);
                     message.error('与服务器通讯失败');
                 });
@@ -70,8 +72,7 @@ class SiteModal extends React.Component {
                     } else {
                         message.error(res.data.message);
                     }
-                })
-                .catch(() => {
+                }, () => {
                     message.error('与服务器通讯失败');
                 });
         }
@@ -180,17 +181,30 @@ class SitesPage extends React.Component {
                     });
                     message.error('站点数据获取失败');
                 }
-            })
-            .catch(() => {
+            }, () => {
                 this.setState({
                     sites_loading: false,
                 });
                 message.error('站点数据获取失败');
-            });
+            })
     };
     addSite = () => {
         this.siteModal.current.show('add');
     };
+    deleteSite = (id) => {
+        axios.post('/site/delete', {
+            id,
+        }).then(res => {
+            if (res.data && res.data.code === 200) {
+                message.success('删除成功');
+                this.refreshTable();
+            } else {
+                message.error(res.data.message);
+            }
+        }, () => {
+            message.error('与服务器通讯失败');
+        });
+    }
     showEditModal = (record) => {
         this.siteModal.current.show('edit', record);
     };
@@ -226,10 +240,7 @@ class SitesPage extends React.Component {
                 render: (_, record) => {
                     return (
                         <div className="button-group">
-                            <Button
-                                key={'btn_view_' + record.id}
-                                icon={<EyeFilled />}
-                            ></Button>
+                            <Button key={'btn_view_' + record.id} icon={<EyeFilled />}></Button>
                             <Button
                                 key={'btn_edit_' + record.id}
                                 icon={<EditFilled />}
@@ -237,7 +248,16 @@ class SitesPage extends React.Component {
                                     this.showEditModal(record);
                                 }}
                             ></Button>
-                            <Popconfirm placement="topRight" key={'btn_delete' + record.id} title="确定要删除吗？所有和该站点有关的数据都会被删除，且该操作不可逆" okText="确定" cancelText="取消">
+                            <Popconfirm
+                                placement="topRight"
+                                key={'btn_delete' + record.id}
+                                title="确定要删除吗？所有和该站点有关的数据都会被删除，且该操作不可逆"
+                                okText="确定"
+                                cancelText="取消"
+                                onConfirm={() => {
+                                    this.deleteSite(record.id);
+                                }}
+                            >
                                 <Button type="danger" icon={<DeleteFilled />}></Button>
                             </Popconfirm>
                         </div>
@@ -259,9 +279,7 @@ class SitesPage extends React.Component {
                             className="card-table"
                             extra={
                                 <div className="button-group">
-                                    <Button onClick={this.refreshTable}>
-                                        刷新
-                                    </Button>
+                                    <Button onClick={this.refreshTable}>刷新</Button>
                                     <Button type="primary" onClick={this.addSite}>
                                         添加
                                     </Button>

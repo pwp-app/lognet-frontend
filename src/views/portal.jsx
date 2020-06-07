@@ -101,8 +101,7 @@ class PortalPage extends React.Component {
                 if (res.data.code !== 200) {
                     message.error(res.data.message);
                 }
-            })
-            .catch(() => {
+            }, () => {
                 message.error('和服务器通讯失败，无法获取验证码');
                 this.setState({
                     validateRetryTime: 0,
@@ -129,8 +128,7 @@ class PortalPage extends React.Component {
                         });
                     }
                 }
-            })
-            .catch(() => {
+            }, () => {
                 message.error('和服务器通讯失败');
             });
     };
@@ -232,13 +230,12 @@ class LoginFormBuilder extends React.Component {
                 } else {
                     message.error('用户信息获取失败');
                 }
-            })
-            .catch(() => {
+            }, () => {
                 message.error('和服务器通讯失败');
                 this.setState({
                     buttonDisabled: false,
                 });
-            });
+            })
         // 刷新Token，供下一次表单提交使用
         this.props.getToken();
     };
@@ -303,8 +300,7 @@ class RegisterFormBuilder extends React.Component {
                 message.success('注册成功');
                 this.props.setEmail(values.email);
                 this.props.checkValidate('register');
-            })
-            .catch((e) => {
+            }, (e) => {
                 console.error(e);
                 message.error('和服务器通讯失败');
                 this.setState({
@@ -486,14 +482,13 @@ class ForgetPasswordForm extends React.Component {
                 } else {
                     message.error(res.data.message);
                 }
-            })
-            .catch(() => {
+            }, () => {
                 message.error('和服务器通讯失败，无法获取验证码');
                 this.setState({
                     retryTime: 0,
                 });
                 clearInterval(this.validateInterval);
-            });
+            })
     };
     submit = () => {
         this.mainForm.current.submit();
@@ -513,8 +508,7 @@ class ForgetPasswordForm extends React.Component {
                 } else {
                     message.error(res.data.message);
                 }
-            })
-            .catch(() => {
+            }, () => {
                 message.error('和服务器通讯失败，请重试');
             });
     };

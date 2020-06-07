@@ -71,7 +71,7 @@ class UserSettingsPage extends React.Component {
             } else {
                 message.error(res.data.message);
             }
-        }).catch(() => {
+        }, () => {
             message.error('提交失败');
         });
     }
@@ -94,8 +94,7 @@ class UserSettingsPage extends React.Component {
                     });
                     message.error('获取登录记录失败');
                 }
-            })
-            .catch(() => {
+            }, () => {
                 this.setState({
                     tableLoading: false,
                 });
