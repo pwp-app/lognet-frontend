@@ -50,9 +50,8 @@ class SiteModal extends React.Component {
     };
     formFinish = (values) => {
         if (this.state.mode === 'add') {
-            axios
-                .post('/site/add', values)
-                .then((res) => {
+            axios.post('/site/add', values).then(
+                (res) => {
                     if (res.data && res.data.code === 200) {
                         this.setState({
                             visible: false,
@@ -62,28 +61,33 @@ class SiteModal extends React.Component {
                     } else {
                         message.error(res.data.message);
                     }
-                }, (err) => {
+                },
+                (err) => {
                     console.error(err);
                     message.error('与服务器通讯失败');
-                });
+                }
+            );
         } else if (this.state.mode === 'edit') {
             axios
                 .post('/site/edit', {
                     id: this.currentId,
                     desc: values.desc,
                 })
-                .then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.setState({
-                            visible: false,
-                        });
-                        this.props.fetch();
-                    } else {
-                        message.error(res.data.message);
+                .then(
+                    (res) => {
+                        if (res.data && res.data.code === 200) {
+                            this.setState({
+                                visible: false,
+                            });
+                            this.props.fetch();
+                        } else {
+                            message.error(res.data.message);
+                        }
+                    },
+                    () => {
+                        message.error('与服务器通讯失败');
                     }
-                }, () => {
-                    message.error('与服务器通讯失败');
-                });
+                );
         }
     };
     render() {
@@ -174,47 +178,55 @@ class SitesPage extends React.Component {
                     pageSize: pagination.pageSize,
                 },
             })
-            .then((res) => {
-                if (res.data && res.data.code === 200 && res.data.data) {
-                    this.setState({
-                        sites: res.data.data.data,
-                        sites_pagination: {
-                            total: res.data.data.total,
-                            ...pagination,
-                        },
-                        sites_loading: false,
-                    });
-                    this.props.setSites(res.data.data.data);
-                } else {
+            .then(
+                (res) => {
+                    if (res.data && res.data.code === 200 && res.data.data) {
+                        this.setState({
+                            sites: res.data.data.data,
+                            sites_pagination: {
+                                total: res.data.data.total,
+                                ...pagination,
+                            },
+                            sites_loading: false,
+                        });
+                        this.props.setSites(res.data.data.data);
+                    } else {
+                        this.setState({
+                            sites_loading: false,
+                        });
+                        message.error('站点数据获取失败');
+                    }
+                },
+                () => {
                     this.setState({
                         sites_loading: false,
                     });
                     message.error('站点数据获取失败');
                 }
-            }, () => {
-                this.setState({
-                    sites_loading: false,
-                });
-                message.error('站点数据获取失败');
-            })
+            );
     };
     addSite = () => {
         this.siteModal.current.show('add');
     };
     deleteSite = (id) => {
-        axios.post('/site/delete', {
-            id,
-        }).then(res => {
-            if (res.data && res.data.code === 200) {
-                message.success('删除成功');
-                this.refreshTable();
-            } else {
-                message.error(res.data.message);
-            }
-        }, () => {
-            message.error('与服务器通讯失败');
-        });
-    }
+        axios
+            .post('/site/delete', {
+                id,
+            })
+            .then(
+                (res) => {
+                    if (res.data && res.data.code === 200) {
+                        message.success('删除成功');
+                        this.refreshTable();
+                    } else {
+                        message.error(res.data.message);
+                    }
+                },
+                () => {
+                    message.error('与服务器通讯失败');
+                }
+            );
+    };
     showEditModal = (record) => {
         this.siteModal.current.show('edit', record);
     };
@@ -250,7 +262,13 @@ class SitesPage extends React.Component {
                 render: (_, record) => {
                     return (
                         <div className="button-group">
-                            <Button key={'btn_view_' + record.id} icon={<EyeFilled />}></Button>
+                            <Button
+                                key={'btn_view_' + record.id}
+                                icon={<EyeFilled />}
+                                onClick={() => {
+                                    this.props.history.push(`/app/sites/detail/${record.id}`);
+                                }}
+                            ></Button>
                             <Button
                                 key={'btn_edit_' + record.id}
                                 icon={<EditFilled />}
@@ -296,7 +314,7 @@ class SitesPage extends React.Component {
                                 </div>
                             }
                         >
-                            <Table dataSource={this.state.sites} columns={tableColumns} pagination={this.state.sites_pagination} loading={this.state.sites_loading} rowKey={row => row.id}/>
+                            <Table dataSource={this.state.sites} columns={tableColumns} pagination={this.state.sites_pagination} loading={this.state.sites_loading} rowKey={(row) => row.id} />
                         </Card>
                     </Col>
                 </Row>

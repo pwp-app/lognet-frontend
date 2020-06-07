@@ -50,11 +50,12 @@ class MainLayout extends React.Component {
         }
     };
     renderRoutes = (routes, parentPath) => {
-        return routes.map((route) => {
-            if (route.children) {
-                this.renderRoutes(route.children, route.path);
-            }
+        let res = [];
+        for (let route of routes) {
             let path = parentPath ? parentPath + route.path : '/app' + route.path;
+            if (route.children) {
+                res = res.concat(this.renderRoutes(route.children, path));
+            }
             if (route.param) {
                 path = path + route.param;
             }
@@ -62,16 +63,17 @@ class MainLayout extends React.Component {
             if (route.auth) {
                 if (route.auth === 'user') {
                     if (!this.props.user.role || this.props.user.role.name !== 'user') {
-                        return null;
+                        continue;
                     }
                 } else if (route.auth === 'admin') {
                     if (!this.props.user.role || this.props.user.role.name !== 'admin') {
-                        return null;
+                        continue;
                     }
                 }
             }
-            return <Route exact key={path} path={path} component={route.component} />;
-        });
+            res.push(<Route exact key={path} path={path} component={route.component} />);
+        }
+        return res;
     };
     async componentDidMount() {
         await this.fetchUserInfo();

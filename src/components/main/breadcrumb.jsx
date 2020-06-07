@@ -1,11 +1,10 @@
-import React from "react";
-import { Breadcrumb } from "antd";
-import { withRouter } from 'react-router-dom';
+import React from 'react';
+import { Breadcrumb } from 'antd';
+import { withRouter, Link } from 'react-router-dom';
 class BreadCrumbPart extends React.Component {
-
     state = {
-        breadcrumb: null
-    }
+        breadcrumb: null,
+    };
 
     getRouteTitle = (routes, path) => {
         for (let i = 0; i < routes.length; i++) {
@@ -23,17 +22,17 @@ class BreadCrumbPart extends React.Component {
     };
 
     getPath = (routes) => {
-        let path = window.location.pathname.replace('/app', '').split("/");
-        let ret = path.map(item => {
-            let p = item.length > 0 ? `/${item}` : null;
+        let path = window.location.pathname.replace('/app', '').split('/');
+        let ret = [];
+        for (let i = 0; i < path.length; i++) {
+            let p = path[i].length > 0 ? `/${path[i]}` : null;
             if (p) {
-                return <Breadcrumb.Item key={p}>{this.getRouteTitle(routes, p)}</Breadcrumb.Item>;
+                ret.push(<Breadcrumb.Item key={p}>{i < path.length - 1 ? <Link to={`/app/${path[i]}`}>{this.getRouteTitle(routes, p)}</Link> : this.getRouteTitle(routes, p)}</Breadcrumb.Item>);
             }
-            return null;
-        });
-        ret = ret.filter(i=>i);
+        }
+        ret = ret.filter((i) => i);
         if (ret.length < 1) {
-            ret.push(<Breadcrumb.Item key="/app">仪表盘</Breadcrumb.Item>)
+            ret.push(<Breadcrumb.Item key="/app">仪表盘</Breadcrumb.Item>);
         }
         return ret;
     };
@@ -50,7 +49,7 @@ class BreadCrumbPart extends React.Component {
     }
 
     render() {
-        return <Breadcrumb style={{ display: "inline-block" }}>{this.state.breadcrumb}</Breadcrumb>;
+        return <Breadcrumb style={{ display: 'inline-block' }}>{this.state.breadcrumb}</Breadcrumb>;
     }
 }
 
