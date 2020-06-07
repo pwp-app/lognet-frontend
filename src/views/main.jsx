@@ -2,22 +2,23 @@ import React from 'react';
 import { Layout } from 'antd';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import { Route, Switch, Redirect, BrowserRouter, withRouter } from 'react-router-dom';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { connect } from 'react-redux';
 import Nav from '../components/main/nav';
 import User from '../components/main/user';
 import routes from '../routes/pages';
-import NotFoundPage from './404';
+import NotFoundPage from './app/notfound';
 import BreadCrumbPart from '../components/main/breadcrumb';
 // utils
 import axios from '../utils/axios';
 
 const { Sider, Header, Content } = Layout;
 
-const mapState = state => ({
+const mapState = (state) => ({
     user: state.user,
 });
 
-const mapDispatch = ({ user: { setUser }}) => ({
+const mapDispatch = ({ user: { setUser } }) => ({
     setUser: (user) => setUser(user),
 });
 
@@ -32,7 +33,7 @@ class MainLayout extends React.Component {
         });
     };
     fetchUserInfo = async () => {
-        let res
+        let res;
         try {
             res = await axios.get('/user/fetchInfo');
         } catch (err) {
@@ -47,7 +48,7 @@ class MainLayout extends React.Component {
         } else {
             this.props.history.push('/portal');
         }
-    }
+    };
     renderRoutes = (routes, parentPath) => {
         return routes.map((route) => {
             if (route.children) {
@@ -71,7 +72,7 @@ class MainLayout extends React.Component {
             }
             return <Route exact key={path} path={path} component={route.component} />;
         });
-    }
+    };
     async componentDidMount() {
         await this.fetchUserInfo();
     }
@@ -80,7 +81,7 @@ class MainLayout extends React.Component {
             return null;
         }
         if (!this.props.user || !this.props.user.role || this.props.user.role.name !== 'user') {
-            return (<Redirect to="/404" />);
+            return <Redirect to="/404" />;
         }
         return (
             <BrowserRouter>
@@ -104,11 +105,15 @@ class MainLayout extends React.Component {
                             </div>
                         </Header>
                         <Content className="site-content">
-                            <Switch>
-                                {this.renderRoutes(routes)}
-                                <Route exact path="/app/404" component={NotFoundPage} />
-                                <Redirect to="/app/404" />
-                            </Switch>
+                            <TransitionGroup>
+                                <CSSTransition classNames="fade" key={this.props.location.pathname} timeout={300} unmountOnExit>
+                                    <Switch>
+                                        {this.renderRoutes(routes)}
+                                        <Route exact path="/app/404" component={NotFoundPage} />
+                                        <Redirect to="/app/404" />
+                                    </Switch>
+                                </CSSTransition>
+                            </TransitionGroup>
                         </Content>
                     </Layout>
                 </Layout>
