@@ -9,7 +9,7 @@ class Nav extends React.Component {
     }
     renderMenu = (data, noIcon = false, parentPath = null)=>{
         return data.map((item)=>{
-            if(item.children){
+            if(item.children && !item.noSubmenu){
                 return (
                     <Menu.SubMenu title={
                         <span>

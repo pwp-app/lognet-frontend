@@ -1,6 +1,7 @@
 import React from 'react';
 import { Row, Col, Card, Table, Button, Popconfirm, message, Modal, Form, Input } from 'antd';
 import { EditFilled, DeleteFilled, EyeFilled } from '@ant-design/icons';
+import { connect } from 'react-redux';
 import IconCard from '../../components/main/iconcard';
 import axios from '../../utils/axios';
 
@@ -8,6 +9,14 @@ const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 18 },
 };
+
+const mapState = (state) => ({
+    sites: state.sites,
+});
+
+const mapDispatch = ({ sites: { setSites } }) => ({
+    setSites: (sites) => setSites(sites),
+});
 
 class SiteModal extends React.Component {
     constructor(props) {
@@ -175,6 +184,7 @@ class SitesPage extends React.Component {
                         },
                         sites_loading: false,
                     });
+                    this.props.setSites(res.data.data.data);
                 } else {
                     this.setState({
                         sites_loading: false,
@@ -286,7 +296,7 @@ class SitesPage extends React.Component {
                                 </div>
                             }
                         >
-                            <Table dataSource={this.state.sites} columns={tableColumns} pagination={this.state.sites_pagination} loading={this.state.sites_loading} />
+                            <Table dataSource={this.state.sites} columns={tableColumns} pagination={this.state.sites_pagination} loading={this.state.sites_loading} rowKey={row => row.id}/>
                         </Card>
                     </Col>
                 </Row>
@@ -296,4 +306,4 @@ class SitesPage extends React.Component {
     }
 }
 
-export default SitesPage;
+export default connect(mapState, mapDispatch)(SitesPage);

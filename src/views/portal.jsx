@@ -1,6 +1,5 @@
 import React from 'react';
 import { Form, Input, Button, Checkbox, message } from 'antd';
-import { withRouter } from 'react-router-dom';
 import { withGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { connect } from 'react-redux';
 import sha256 from 'crypto-js/sha256';
@@ -21,9 +20,10 @@ const mapState = (state) => ({
     user: state.user,
 });
 
-const mapDispatch = ({ user: { setUser, setEmail } }) => ({
+const mapDispatch = ({ user: { setUser, setEmail }, logout: { setLogout } }) => ({
     setUser: (user) => setUser(user),
     setEmail: (email) => setEmail(email),
+    setLogout: (logout) => setLogout(logout),
 });
 
 class PortalPage extends React.Component {
@@ -36,6 +36,7 @@ class PortalPage extends React.Component {
     };
     componentDidMount = () => {
         this.getToken();
+        this.props.setLogout(false);
     };
     getToken = async () => {
         this.setState({
@@ -97,17 +98,20 @@ class PortalPage extends React.Component {
                     email: this.props.user.email,
                 },
             })
-            .then((res) => {
-                if (res.data.code !== 200) {
-                    message.error(res.data.message);
+            .then(
+                (res) => {
+                    if (res.data.code !== 200) {
+                        message.error(res.data.message);
+                    }
+                },
+                () => {
+                    message.error('和服务器通讯失败，无法获取验证码');
+                    this.setState({
+                        validateRetryTime: 0,
+                    });
+                    clearInterval(this.validateInterval);
                 }
-            }, () => {
-                message.error('和服务器通讯失败，无法获取验证码');
-                this.setState({
-                    validateRetryTime: 0,
-                });
-                clearInterval(this.validateInterval);
-            });
+            );
     };
     sendValidate = (code) => {
         axios
@@ -115,22 +119,25 @@ class PortalPage extends React.Component {
                 email: this.props.user.email,
                 code,
             })
-            .then((res) => {
-                if (res.data.code === 200) {
-                    if (this.state.from === 'login') {
-                        // 验证成功，放行到主界面
-                        message.success('验证成功');
-                        this.props.history.push('/app');
-                    } else if (this.state.from === 'register') {
-                        message.success('验证成功，请输入您的凭据登录系统');
-                        this.setState({
-                            formType: 'login',
-                        });
+            .then(
+                (res) => {
+                    if (res.data.code === 200) {
+                        if (this.state.from === 'login') {
+                            // 验证成功，放行到主界面
+                            message.success('验证成功');
+                            this.props.history.push('/app');
+                        } else if (this.state.from === 'register') {
+                            message.success('验证成功，请输入您的凭据登录系统');
+                            this.setState({
+                                formType: 'login',
+                            });
+                        }
                     }
+                },
+                () => {
+                    message.error('和服务器通讯失败');
                 }
-            }, () => {
-                message.error('和服务器通讯失败');
-            });
+            );
     };
     render() {
         return (
@@ -214,28 +221,31 @@ class LoginFormBuilder extends React.Component {
                 ...values,
                 token: this.props.token,
             })
-            .then((res) => {
-                this.setState({
-                    buttonDisabled: false,
-                });
-                if (res.data.code !== 200) {
-                    message.error(res.data.message);
-                    return;
+            .then(
+                (res) => {
+                    this.setState({
+                        buttonDisabled: false,
+                    });
+                    if (res.data.code !== 200) {
+                        message.error(res.data.message);
+                        return;
+                    }
+                    // 登录成功
+                    if (res.data.data) {
+                        this.props.setUser(res.data.data);
+                        message.success('登录成功');
+                        this.props.checkValidate('login');
+                    } else {
+                        message.error('用户信息获取失败');
+                    }
+                },
+                () => {
+                    message.error('和服务器通讯失败');
+                    this.setState({
+                        buttonDisabled: false,
+                    });
                 }
-                // 登录成功
-                if (res.data.data) {
-                    this.props.setUser(res.data.data);
-                    message.success('登录成功');
-                    this.props.checkValidate('login');
-                } else {
-                    message.error('用户信息获取失败');
-                }
-            }, () => {
-                message.error('和服务器通讯失败');
-                this.setState({
-                    buttonDisabled: false,
-                });
-            })
+            );
         // 刷新Token，供下一次表单提交使用
         this.props.getToken();
     };
@@ -289,24 +299,27 @@ class RegisterFormBuilder extends React.Component {
                 email: values.email,
                 token: this.props.token,
             })
-            .then((res) => {
-                this.setState({
-                    buttonDisabled: false,
-                });
-                if (res.data.code !== 200) {
-                    message.error(res.data.message);
-                    return;
+            .then(
+                (res) => {
+                    this.setState({
+                        buttonDisabled: false,
+                    });
+                    if (res.data.code !== 200) {
+                        message.error(res.data.message);
+                        return;
+                    }
+                    message.success('注册成功');
+                    this.props.setEmail(values.email);
+                    this.props.checkValidate('register');
+                },
+                (e) => {
+                    console.error(e);
+                    message.error('和服务器通讯失败');
+                    this.setState({
+                        buttonDisabled: false,
+                    });
                 }
-                message.success('注册成功');
-                this.props.setEmail(values.email);
-                this.props.checkValidate('register');
-            }, (e) => {
-                console.error(e);
-                message.error('和服务器通讯失败');
-                this.setState({
-                    buttonDisabled: false,
-                });
-            });
+            );
         // 刷新Token，供下一次表单提交使用
         this.props.getToken();
     };
@@ -472,23 +485,26 @@ class ForgetPasswordForm extends React.Component {
                     ...values,
                 },
             })
-            .then((res) => {
-                if (res.data && res.data.code === 200) {
-                    message.success('发送成功，请到您填写的邮箱内查收验证码');
+            .then(
+                (res) => {
+                    if (res.data && res.data.code === 200) {
+                        message.success('发送成功，请到您填写的邮箱内查收验证码');
+                        this.setState({
+                            mailSent: true,
+                            email: values.email,
+                        });
+                    } else {
+                        message.error(res.data.message);
+                    }
+                },
+                () => {
+                    message.error('和服务器通讯失败，无法获取验证码');
                     this.setState({
-                        mailSent: true,
-                        email: values.email,
+                        retryTime: 0,
                     });
-                } else {
-                    message.error(res.data.message);
+                    clearInterval(this.validateInterval);
                 }
-            }, () => {
-                message.error('和服务器通讯失败，无法获取验证码');
-                this.setState({
-                    retryTime: 0,
-                });
-                clearInterval(this.validateInterval);
-            })
+            );
     };
     submit = () => {
         this.mainForm.current.submit();
@@ -501,16 +517,19 @@ class ForgetPasswordForm extends React.Component {
                 ...values,
                 email: this.state.email,
             })
-            .then((res) => {
-                if (res.data && res.data.code === 200) {
-                    message.success('密码重置成功，请使用新密码登录');
-                    this.props.switch();
-                } else {
-                    message.error(res.data.message);
+            .then(
+                (res) => {
+                    if (res.data && res.data.code === 200) {
+                        message.success('密码重置成功，请使用新密码登录');
+                        this.props.switch();
+                    } else {
+                        message.error(res.data.message);
+                    }
+                },
+                () => {
+                    message.error('和服务器通讯失败，请重试');
                 }
-            }, () => {
-                message.error('和服务器通讯失败，请重试');
-            });
+            );
     };
     render() {
         return (
@@ -614,4 +633,4 @@ class ForgetPasswordForm extends React.Component {
     }
 }
 
-export default connect(mapState, mapDispatch)(withRouter(withGoogleReCaptcha(PortalPage)));
+export default connect(mapState, mapDispatch)(withGoogleReCaptcha(PortalPage));

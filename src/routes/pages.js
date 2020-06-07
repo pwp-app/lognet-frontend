@@ -1,4 +1,5 @@
 import SitesPage from '../views/app/sites';
+import SiteDetailPage from '../views/app/sitedetail';
 import UserSettingsPage from '../views/app/usersettings';
 
 export default [
@@ -14,6 +15,16 @@ export default [
         icon: 'CloudServerOutlined',
         component: SitesPage,
         auth: 'user',
+        noSubmenu: true,
+        children: [
+            {
+                path: '/detail',
+                param: '/:id',
+                title: '站点详情',
+                component: SiteDetailPage,
+                auth: 'user'
+            }
+        ]
     },
     {
         path: '/user',

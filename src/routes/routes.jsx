@@ -7,7 +7,7 @@ import routes from './site';
 import MainLayout from '../views/main';
 
 const mapState = state => ({
-    user: state.user,
+    logout: state.logout
 });
 
 class Routes extends React.Component {
@@ -27,6 +27,7 @@ class Routes extends React.Component {
                 <CSSTransition classNames="fade" appear={true} key={location.pathname} timeout={300} unmountOnExit>
                     <Switch location={location}>
                         { this.renderRoutes(routes) }
+                        { this.props.logout ? <Redirect to="/portal"/> : null }
                         <Route key="/app" path="/app" component={MainLayout}></Route>
                         <Redirect to="/404" />
                     </Switch>

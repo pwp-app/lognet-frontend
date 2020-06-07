@@ -67,7 +67,7 @@ class UserSettingsPage extends React.Component {
                 });
                 // 置为初始态
                 this.props.setUser(null);
-                window.location.href='/portal'
+                this.props.history.push('/portal');
             } else {
                 message.error(res.data.message);
             }
@@ -146,7 +146,7 @@ class UserSettingsPage extends React.Component {
                     <Col span={12}></Col>
                     <Col span={24}>
                         <Card className="card-table us-card-logs" title="最近 10 次登录记录">
-                            <Table dataSource={this.state.recentLogs} columns={logTableColumns} pagination={false} loading={this.state.tableLoading} />
+                            <Table dataSource={this.state.recentLogs} columns={logTableColumns} pagination={false} loading={this.state.tableLoading} rowKey={row=>row.createTime}/>
                         </Card>
                     </Col>
                 </Row>

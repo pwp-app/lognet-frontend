@@ -51,9 +51,12 @@ class MainLayout extends React.Component {
     renderRoutes = (routes, parentPath) => {
         return routes.map((route) => {
             if (route.children) {
-                return this.renderRoutes(route.children, route.path);
+                this.renderRoutes(route.children, route.path);
             }
             let path = parentPath ? parentPath + route.path : '/app' + route.path;
+            if (route.param) {
+                path = path + route.param;
+            }
             // Guard
             if (route.auth) {
                 if (route.auth === 'user') {

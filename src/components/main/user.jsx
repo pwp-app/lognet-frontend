@@ -6,26 +6,36 @@ import { connect } from 'react-redux';
 import axios from '../../utils/axios';
 import MD5 from 'crypto-js/md5';
 
-const mapState = state => ({
+const mapState = (state) => ({
     user: state.user,
 });
 
+const mapDispatch = ({ logout: {setLogout}}) => ({
+    setLogout: (logout) => setLogout(logout),
+});
+
 class UserDropdown extends React.Component {
+    state = {
+        logout: false,
+    };
     toUserSettings = () => {
         this.props.history.push('/app/user');
-    }
+    };
     logout = () => {
-        axios.get('/portal/logout').then((res) => {
-            if (res.data && res.data.code === 200) {
-                message.success('登出成功');
-                this.props.history.push('/');
-            } else {
-                message.error('登出失败，' + res.data.message);
+        axios.get('/portal/logout').then(
+            (res) => {
+                if (res.data && res.data.code === 200) {
+                    message.success('登出成功');
+                    this.props.setLogout(true);
+                } else {
+                    message.error('登出失败，' + res.data.message);
+                }
+            },
+            () => {
+                message.error('登出失败');
             }
-        }, () => {
-            message.error('登出失败');
-        });
-    }
+        );
+    };
     menu = (
         <Menu>
             <Menu.Item onClick={this.toUserSettings}>
@@ -43,9 +53,7 @@ class UserDropdown extends React.Component {
         return (
             <Dropdown overlay={this.menu}>
                 <div className="user-dropdown">
-                    {
-                        this.props.user.email ? <Avatar className="user-dropdown-avatar" src={`https://www.gravatar.com/avatar/${email_hash}?s=32`}/>: <Avatar className="user-dropdown-avatar" icon={<UserOutlined />} />
-                    }
+                    {this.props.user.email ? <Avatar className="user-dropdown-avatar" src={`https://www.gravatar.com/avatar/${email_hash}?s=32`} /> : <Avatar className="user-dropdown-avatar" icon={<UserOutlined />} />}
                     <span className="user-dropdown-name">{this.props.user.username ? this.props.user.username : 'UNDEFINED'}</span>
                 </div>
             </Dropdown>
@@ -53,4 +61,4 @@ class UserDropdown extends React.Component {
     }
 }
 
-export default connect(mapState, null)(withRouter(UserDropdown));
+export default connect(mapState, mapDispatch)(withRouter(UserDropdown));
