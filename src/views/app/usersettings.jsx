@@ -46,6 +46,7 @@ class UserSettingsPage extends React.Component {
         recentLogs: [],
         changeBindVisible: false,
         modPasswordVisible: false,
+        tableLoading: true,
     };
     openGravatar = () => {
         window.open('https://en.gravatar.com/emails/');
@@ -85,12 +86,19 @@ class UserSettingsPage extends React.Component {
                     }
                     this.setState({
                         recentLogs: data,
+                        tableLoading: false,
                     });
                 } else {
+                    this.setState({
+                        tableLoading: false,
+                    });
                     message.error('获取登录记录失败');
                 }
             })
             .catch(() => {
+                this.setState({
+                    tableLoading: false,
+                });
                 message.error('获取登录记录失败');
             });
     };
@@ -138,15 +146,14 @@ class UserSettingsPage extends React.Component {
                     </Col>
                     <Col span={12}></Col>
                     <Col span={24}>
-                        <Card className="us-card-logs" title="最近 10 次登录记录">
-                            <Table dataSource={this.state.recentLogs} columns={logTableColumns} pagination={false} />
+                        <Card className="card-table us-card-logs" title="最近 10 次登录记录">
+                            <Table dataSource={this.state.recentLogs} columns={logTableColumns} pagination={false} loading={this.state.tableLoading} />
                         </Card>
                     </Col>
                 </Row>
                 <Modal
                     title="更改绑定邮箱"
                     visible={this.state.changeBindVisible}
-
                     >
 
                 </Modal>
