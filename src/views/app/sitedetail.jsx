@@ -247,6 +247,9 @@ class SiteDetailPage extends React.Component {
                 title: '出错路径',
                 dataIndex: 'path',
                 key: 'path',
+                render: (text) => {
+                    return <span className="table-linewrap">{text}</span>;
+                }
             },
             {
                 title: '内容',
@@ -387,7 +390,7 @@ class SiteDetailPage extends React.Component {
                                     </div>
                                 </>
                             ) : (
-                                <Skeleton />
+                                <Skeleton active />
                             )}
                         </Card>
                     </Col>
@@ -572,29 +575,33 @@ class LogModal extends React.Component {
         });
     };
     render() {
+        const layout = {
+            left: 4,
+            right: 20
+        }
         return (
-            <Modal className="modal-log-detail" visible={this.state.visible} onCancel={() => this.setState({ visible: false })} onOk={() => this.setState({ visible: false })} title="日志详情">
+            <Modal className="modal-log-detail" width={680} visible={this.state.visible} onCancel={() => this.setState({ visible: false })} onOk={() => this.setState({ visible: false })} title="日志详情">
                 <Row>
-                    <Col span={6}>
+                    <Col span={layout.left}>
                         <span>提交时间: </span>
                     </Col>
-                    <Col span={18}>
+                    <Col span={layout.right}>
                         <span>{this.state.log.createTime}</span>
                     </Col>
                 </Row>
                 <Row>
-                    <Col span={6}>
-                        <span>出错路径: </span>
+                    <Col span={layout.left}>
+                        <span>路径: </span>
                     </Col>
-                    <Col span={18}>
+                    <Col span={layout.right}>
                         <span>{this.state.log.path}</span>
                     </Col>
                 </Row>
                 <Row>
-                    <Col span={6}>
+                    <Col span={layout.left}>
                         <span>内容: </span>
                     </Col>
-                    <Col span={18}>
+                    <Col span={layout.right}>
                         <span>{this.state.log.content}</span>
                     </Col>
                 </Row>

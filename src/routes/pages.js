@@ -1,6 +1,7 @@
 import SitesPage from '../views/app/sites';
 import SiteDetailPage from '../views/app/sitedetail';
 import UserSettingsPage from '../views/app/usersettings';
+import MissionPage from '../views/app/mission';
 
 export default [
     {
@@ -22,6 +23,13 @@ export default [
                 param: '/:id',
                 title: '站点详情',
                 component: SiteDetailPage,
+                auth: 'user'
+            },
+            {
+                path: '/mission',
+                param: '/:id',
+                title: '任务详情',
+                component: MissionPage,
                 auth: 'user'
             }
         ]

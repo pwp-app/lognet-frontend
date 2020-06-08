@@ -1,0 +1,67 @@
+.mission-header-card {
+    .ant-card-body {
+        div {
+            margin-bottom: 8px;
+        }
+        div:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.mission-name {
+    &-title {
+        font-size: 21px;
+        font-weight: 600;
+        user-select: none;
+    }
+    &-id {
+        font-size: 14px;
+        font-family: consolas;
+        margin-left: 16px;
+        span:first-child {
+            user-select: none;
+        }
+    }
+    .anticon {
+        margin-left: 8px;
+        transition: 100ms ease-in-out;
+    }
+    .anticon:hover {
+        cursor: pointer;
+        color: rgba(0, 0, 0, 0.5);
+    }
+    .ant-btn {
+        float: right;
+    }
+}
+
+.mission-time {
+    user-select: none;
+    span {
+        margin-right: 8px;
+    }
+    span:last-child {
+        margin-right: 0;
+    }
+}
+
+.mission-desc {
+    user-select: none;
+}
+
+.logtype-debug {
+    color: rgba(0,0,0,0.375);
+}
+
+.logtype-info {
+    color: rgba(0,0,0,0.65);
+}
+
+.logtype-warn {
+    color: @color-primary-darken;
+}
+
+.logtype-danger {
+    color: #ff4d4f;
+}
