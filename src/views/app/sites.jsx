@@ -156,7 +156,6 @@ class SitesPage extends React.Component {
         sites_pagination: {
             page: 1,
             pageSize: 10,
-            hideOnSinglePage: true,
         },
         sites_loading: true,
     };
@@ -181,7 +180,8 @@ class SitesPage extends React.Component {
                             sites: res.data.data.data,
                             sites_pagination: {
                                 total: res.data.data.total,
-                                ...pagination,
+                                page: pagination.page,
+                                pageSize: pagination.pageSize,
                             },
                             sites_loading: false,
                         });
@@ -199,6 +199,13 @@ class SitesPage extends React.Component {
                     message.error('站点数据获取失败');
                 }
             );
+    };
+    handleTableChange = (pagination, filters, sorter) => {
+        this.setState({
+            sites_pagination: pagination
+        }, () => {
+            this.fetch(this.state.sites_pagination);
+        });
     };
     addSite = () => {
         this.siteModal.current.show('add');
@@ -310,7 +317,13 @@ class SitesPage extends React.Component {
                                 </div>
                             }
                         >
-                            <Table dataSource={this.state.sites} columns={tableColumns} pagination={this.state.sites_pagination} loading={this.state.sites_loading} rowKey={(row) => row.id} />
+                            <Table
+                                dataSource={this.state.sites}
+                                columns={tableColumns}
+                                pagination={this.state.sites_pagination}
+                                loading={this.state.sites_loading}
+                                rowKey={(row) => row.id}
+                                handleTableChange={this.handleTableChange}/>
                         </Card>
                     </Col>
                 </Row>
