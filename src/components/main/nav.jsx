@@ -38,8 +38,12 @@ class Nav extends React.Component {
     }
     componentDidMount() {
         let path = window.location.pathname;
-        if (path.endsWith('/')) {
-            path = path.substring(0, path.length - 1);
+        if (path.includes('/app/sites')) {
+            path = '/app/sites';
+        } else {
+            if (path.endsWith('/')) {
+                path = path.substring(0, path.length - 1);
+            }
         }
         this.setState({
             activeKey: path,
