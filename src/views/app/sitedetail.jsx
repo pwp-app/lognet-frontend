@@ -209,6 +209,7 @@ class SiteDetailPage extends React.Component {
                 title: '提交时间',
                 dataIndex: 'createTime',
                 key: 'createTime',
+                width: 180,
             },
             {
                 title: '出错路径',
@@ -219,7 +220,11 @@ class SiteDetailPage extends React.Component {
                 title: '内容',
                 dataIndex: 'content',
                 key: 'content',
-                render: (text) => (text.length > 30 ? text.replace(/(\r\n)|(\n)/g, '').substring(0, 30) + '...' : text.replace(/(\r\n)|(\n)/g, '')),
+                render: (text) => {
+                    return (
+                        <span className="table-linewrap">{text}</span>
+                    )
+                },
             },
             {
                 title: '操作',
