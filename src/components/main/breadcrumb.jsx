@@ -22,18 +22,17 @@ class BreadCrumbPart extends React.Component {
     };
 
     getPath = (routes) => {
-        let path = window.location.pathname.replace('/app/', '').split('/');
+        let path = window.location.pathname.replace('/app/', '').replace('/app', '').split('/');
         if (path[path.length - 1].length === 32) {
             path = path.slice(0, path.length - 1);
         }
-        console.log(path)
         let ret = [];
         let link = '';
         for (let i = 0; i < path.length; i++) {
             let p = path[i].length > 0 ? `/${path[i]}` : null;
             link += ('/' + path[i]);
             if (p) {
-                console.log(i < path.length - 1);
+                console.log(this.getRouteTitle(routes, p));
                 ret.push(<Breadcrumb.Item key={p}>{i < path.length - 1 ? <Link to={`/app${link}`}>{this.getRouteTitle(routes, p)}</Link> : this.getRouteTitle(routes, p)}</Breadcrumb.Item>);
             }
         }
