@@ -19,6 +19,7 @@ class SiteDetailPage extends React.Component {
     constructor(props) {
         super(props);
         this.missionModal = React.createRef();
+        this.logModal = React.createRef();
     }
     state = {
         site: {},
@@ -231,11 +232,16 @@ class SiteDetailPage extends React.Component {
                 key: 'operation',
                 render: (_, record) => {
                     return (
-                        <Popconfirm placement="topRight" key={'btn_delete' + record.id} title="确定要删除这条日志吗？" okText="确定" cancelText="取消" onConfirm={() => {
-                            this.deleteLog(record.id)
-                        }}>
-                            <Button type="danger" icon={<DeleteFilled />}></Button>
-                        </Popconfirm>
+                        <div className="button-group">
+                            <Button key={'btn_view_' + record.id} icon={<EyeFilled />} onClick={() => {
+                                this.logModal.current.show(record);
+                            }}></Button>
+                            <Popconfirm placement="topRight" key={'btn_delete' + record.id} title="确定要删除这条日志吗？" okText="确定" cancelText="取消" onConfirm={() => {
+                                this.deleteLog(record.id)
+                            }}>
+                                <Button type="danger" icon={<DeleteFilled />}></Button>
+                            </Popconfirm>
+                        </div>
                     )
                 }
             }
@@ -358,6 +364,7 @@ class SiteDetailPage extends React.Component {
                     </Col>
                 </Row>
                 <MissionModal ref={this.missionModal} refresh={this.refreshMissions} siteId={this.state.site.id}/>
+                <LogModal ref={this.logModal} />
             </div>
         );
     }
@@ -492,6 +499,54 @@ class MissionModal extends React.Component {
                 </Form>
             </Modal>
         );
+    }
+}
+
+class LogModal extends React.Component {
+    state = {
+        visible: false,
+        log: {},
+    }
+    show = (record) => {
+        this.setState({
+            visible: true,
+            log: record
+        });
+    }
+    render() {
+        return (
+            <Modal
+                className="modal-log-detail"
+                visible={this.state.visible}
+                onCancel={() => this.setState({visible: false})}
+                onOk={() => this.setState({visible: false})}
+                title="日志详情">
+                    <Row>
+                        <Col span={6}>
+                            <span>提交时间: </span>
+                        </Col>
+                        <Col span={18}>
+                            <span>{this.state.log.createTime}</span>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={6}>
+                            <span>出错路径: </span>
+                        </Col>
+                        <Col span={18}>
+                            <span>{this.state.log.path}</span>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={6}>
+                            <span>内容: </span>
+                        </Col>
+                        <Col span={18}>
+                            <span>{this.state.log.content}</span>
+                        </Col>
+                    </Row>
+            </Modal>
+        )
     }
 }
 
