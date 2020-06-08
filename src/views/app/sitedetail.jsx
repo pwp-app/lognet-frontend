@@ -10,6 +10,10 @@ const mapState = (state) => ({
     site: state.site,
 });
 
+const mapDispatch = ({ mission: { setMission } }) => ({
+    setMission: (mission) => setMission(mission),
+});
+
 const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 18 },
@@ -50,13 +54,13 @@ class SiteDetailPage extends React.Component {
     refreshLogs = () => {
         this.setState({
             logs_loading: true,
-        })
+        });
         this.fetchLogs(this.state.logs_pagination);
     };
     refreshMissions = () => {
         this.setState({
             mission_loading: true,
-        })
+        });
         this.fetchMissions(this.state.mission_pagination);
     };
     fetchLogs = (pagination) => {
@@ -136,35 +140,60 @@ class SiteDetailPage extends React.Component {
     };
     editMission = (record) => {
         this.missionModal.current.show('edit', record);
-    }
+    };
     deleteMission = (id) => {
-        axios.post('/mission/delete', {
-            id
-        }).then(res => {
-            if (res.data && res.data.code === 200) {
-                message.success('删除成功');
-                this.refreshMissions();
-            } else {
-                message.error(res.data.message);
-            }
-        }, () => {
-            message.error('与服务器通讯失败');
-        })
-    }
+        axios
+            .post('/mission/delete', {
+                id,
+            })
+            .then(
+                (res) => {
+                    if (res.data && res.data.code === 200) {
+                        message.success('删除成功');
+                        this.refreshMissions();
+                    } else {
+                        message.error(res.data.message);
+                    }
+                },
+                () => {
+                    message.error('与服务器通讯失败');
+                }
+            );
+    };
     deleteLog = (id) => {
-        axios.post('/general_log/delete', {
-            id,
-        }).then(res => {
-            if (res.data && res.data.code === 200) {
-                message.success('删除成功');
-                this.refreshLogs();
-            } else {
-                message.error(res.data.message);
-            }
-        }, () => {
-            message.error('与服务器通讯失败');
-        });
-    }
+        axios
+            .post('/general_log/delete', {
+                id,
+            })
+            .then(
+                (res) => {
+                    if (res.data && res.data.code === 200) {
+                        message.success('删除成功');
+                        this.refreshLogs();
+                    } else {
+                        message.error(res.data.message);
+                    }
+                },
+                () => {
+                    message.error('与服务器通讯失败');
+                }
+            );
+    };
+    fetchStats = () => {
+        axios
+            .get('/site/fetchStats', {
+                params: {
+                    id: this.state.site.id,
+                },
+            })
+            .then((res) => {
+                if (res.data && res.data.code === 200) {
+                    this.setState({
+                        stats: res.data.data,
+                    });
+                }
+            });
+    };
     componentDidMount() {
         if (this.props.site) {
             this.setState(
@@ -173,6 +202,7 @@ class SiteDetailPage extends React.Component {
                 },
                 () => {
                     this.initTables();
+                    this.fetchStats();
                 }
             );
         } else {
@@ -191,6 +221,7 @@ class SiteDetailPage extends React.Component {
                                 },
                                 () => {
                                     this.initTables();
+                                    this.fetchStats();
                                 }
                             );
                         } else {
@@ -222,9 +253,7 @@ class SiteDetailPage extends React.Component {
                 dataIndex: 'content',
                 key: 'content',
                 render: (text) => {
-                    return (
-                        <span className="table-linewrap">{text}</span>
-                    )
+                    return <span className="table-linewrap">{text}</span>;
                 },
             },
             {
@@ -233,18 +262,29 @@ class SiteDetailPage extends React.Component {
                 render: (_, record) => {
                     return (
                         <div className="button-group">
-                            <Button key={'btn_view_' + record.id} icon={<EyeFilled />} onClick={() => {
-                                this.logModal.current.show(record);
-                            }}></Button>
-                            <Popconfirm placement="topRight" key={'btn_delete' + record.id} title="确定要删除这条日志吗？" okText="确定" cancelText="取消" onConfirm={() => {
-                                this.deleteLog(record.id)
-                            }}>
+                            <Button
+                                key={'btn_view_' + record.id}
+                                icon={<EyeFilled />}
+                                onClick={() => {
+                                    this.logModal.current.show(record);
+                                }}
+                            ></Button>
+                            <Popconfirm
+                                placement="topRight"
+                                key={'btn_delete' + record.id}
+                                title="确定要删除这条日志吗？"
+                                okText="确定"
+                                cancelText="取消"
+                                onConfirm={() => {
+                                    this.deleteLog(record.id);
+                                }}
+                            >
                                 <Button type="danger" icon={<DeleteFilled />}></Button>
                             </Popconfirm>
                         </div>
-                    )
-                }
-            }
+                    );
+                },
+            },
         ];
 
         const missionColumns = [
@@ -257,28 +297,28 @@ class SiteDetailPage extends React.Component {
                 title: '描述',
                 dataIndex: 'description',
                 key: 'description',
-                render: (text) => text ? text : '-'
+                render: (text) => (text ? text : '-'),
             },
             {
                 title: '起始时间',
                 dataIndex: 'startTime',
                 key: 'startTime',
                 render: (value) => (value ? value.split(' ')[0] : '-'),
-                width: 160
+                width: 160,
             },
             {
                 title: '结束时间',
                 dataIndex: 'endTime',
                 key: 'endTime',
                 render: (value) => (value ? value.split(' ')[0] : '-'),
-                width: 160
+                width: 160,
             },
             {
                 title: '状态',
                 dataIndex: 'enabled',
                 key: 'enabled',
                 render: (value) => (value ? '可用' : '禁用中'),
-                width: 160
+                width: 160,
             },
             {
                 title: '操作',
@@ -286,13 +326,31 @@ class SiteDetailPage extends React.Component {
                 render: (_, record) => {
                     return (
                         <div className="button-group">
-                            <Button key={'btn_view_' + record.id} icon={<EyeFilled />} onClick={() => {}}></Button>
-                            <Button key={'btn_edit_' + record.id} icon={<EditFilled />} onClick={() => {
-                                this.editMission(record);
-                            }}></Button>
-                            <Popconfirm placement="topRight" key={'btn_delete' + record.id} title="确定要删除吗？所有和该任务有关的数据都会被删除，且该操作不可逆" okText="确定" cancelText="取消" onConfirm={() => {
-                                this.deleteMission(record.id)
-                            }}>
+                            <Button
+                                key={'btn_view_' + record.id}
+                                icon={<EyeFilled />}
+                                onClick={() => {
+                                    this.props.setMission(record);
+                                    this.props.history.push(`/app/sites/mission/${record.id}`);
+                                }}
+                            ></Button>
+                            <Button
+                                key={'btn_edit_' + record.id}
+                                icon={<EditFilled />}
+                                onClick={() => {
+                                    this.editMission(record);
+                                }}
+                            ></Button>
+                            <Popconfirm
+                                placement="topRight"
+                                key={'btn_delete' + record.id}
+                                title="确定要删除吗？所有和该任务有关的数据都会被删除，且该操作不可逆"
+                                okText="确定"
+                                cancelText="取消"
+                                onConfirm={() => {
+                                    this.deleteMission(record.id);
+                                }}
+                            >
                                 <Button type="danger" icon={<DeleteFilled />}></Button>
                             </Popconfirm>
                         </div>
@@ -363,7 +421,7 @@ class SiteDetailPage extends React.Component {
                         </Card>
                     </Col>
                 </Row>
-                <MissionModal ref={this.missionModal} refresh={this.refreshMissions} siteId={this.state.site.id}/>
+                <MissionModal ref={this.missionModal} refresh={this.refreshMissions} siteId={this.state.site.id} />
                 <LogModal ref={this.logModal} />
             </div>
         );
@@ -403,30 +461,35 @@ class MissionModal extends React.Component {
     };
     submitForm = () => {
         this.form.current.submit();
-    }
+    };
     formFinish = (values) => {
         values.startTime = values.startTime.format('YYYY-MM-DD') + ' 00:00:00';
         values.endTime = values.endTime.format('YYYY-MM-DD') + ' 23:59:59';
-        axios.post('/mission/create', {
-            siteId: this.props.siteId,
-            ...values
-        }).then(res => {
-            if (res.data && res.data.code === 200) {
-                this.setState({
-                    visible: false,
-                });
-                message.success('创建成功');
-                if (typeof this.props.refresh === 'function') {
-                    this.props.refresh();
+        axios
+            .post('/mission/create', {
+                siteId: this.props.siteId,
+                ...values,
+            })
+            .then(
+                (res) => {
+                    if (res.data && res.data.code === 200) {
+                        this.setState({
+                            visible: false,
+                        });
+                        message.success('创建成功');
+                        if (typeof this.props.refresh === 'function') {
+                            this.props.refresh();
+                        }
+                    } else {
+                        message.error(res.data.message);
+                    }
+                },
+                (err) => {
+                    console.error(err);
+                    message.error('与服务器通讯失败');
                 }
-            } else {
-                message.error(res.data.message)
-            }
-        }, (err) => {
-            console.error(err);
-            message.error('与服务器通讯失败');
-        })
-    }
+            );
+    };
     render() {
         const disabledDateBefore = (current) => {
             return current && current < moment().startOf('day');
@@ -485,15 +548,10 @@ class MissionModal extends React.Component {
                     >
                         <Input />
                     </Form.Item>
-                    <Form.Item
-                        name="startTime"
-                        label="起始日期"
-                        >
+                    <Form.Item name="startTime" label="起始日期">
                         <DatePicker format="YYYY-MM-DD" disabledDate={disabledDateBefore} />
                     </Form.Item>
-                    <Form.Item
-                        name="endTime"
-                        label="结束日期">
+                    <Form.Item name="endTime" label="结束日期">
                         <DatePicker format="YYYY-MM-DD" disabledDate={disabledDateAfter} />
                     </Form.Item>
                 </Form>
@@ -506,48 +564,43 @@ class LogModal extends React.Component {
     state = {
         visible: false,
         log: {},
-    }
+    };
     show = (record) => {
         this.setState({
             visible: true,
-            log: record
+            log: record,
         });
-    }
+    };
     render() {
         return (
-            <Modal
-                className="modal-log-detail"
-                visible={this.state.visible}
-                onCancel={() => this.setState({visible: false})}
-                onOk={() => this.setState({visible: false})}
-                title="日志详情">
-                    <Row>
-                        <Col span={6}>
-                            <span>提交时间: </span>
-                        </Col>
-                        <Col span={18}>
-                            <span>{this.state.log.createTime}</span>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={6}>
-                            <span>出错路径: </span>
-                        </Col>
-                        <Col span={18}>
-                            <span>{this.state.log.path}</span>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={6}>
-                            <span>内容: </span>
-                        </Col>
-                        <Col span={18}>
-                            <span>{this.state.log.content}</span>
-                        </Col>
-                    </Row>
+            <Modal className="modal-log-detail" visible={this.state.visible} onCancel={() => this.setState({ visible: false })} onOk={() => this.setState({ visible: false })} title="日志详情">
+                <Row>
+                    <Col span={6}>
+                        <span>提交时间: </span>
+                    </Col>
+                    <Col span={18}>
+                        <span>{this.state.log.createTime}</span>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={6}>
+                        <span>出错路径: </span>
+                    </Col>
+                    <Col span={18}>
+                        <span>{this.state.log.path}</span>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={6}>
+                        <span>内容: </span>
+                    </Col>
+                    <Col span={18}>
+                        <span>{this.state.log.content}</span>
+                    </Col>
+                </Row>
             </Modal>
-        )
+        );
     }
 }
 
-export default connect(mapState, null)(SiteDetailPage);
+export default connect(mapState, mapDispatch)(SiteDetailPage);
