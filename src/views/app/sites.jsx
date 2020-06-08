@@ -10,12 +10,8 @@ const formLayout = {
     wrapperCol: { span: 18 },
 };
 
-const mapState = (state) => ({
-    sites: state.sites,
-});
-
-const mapDispatch = ({ sites: { setSites } }) => ({
-    setSites: (sites) => setSites(sites),
+const mapDispatch = ({ site: { setSite } }) => ({
+    setSite: (site) => setSite(site),
 });
 
 class SiteModal extends React.Component {
@@ -189,7 +185,6 @@ class SitesPage extends React.Component {
                             },
                             sites_loading: false,
                         });
-                        this.props.setSites(res.data.data.data);
                     } else {
                         this.setState({
                             sites_loading: false,
@@ -266,6 +261,7 @@ class SitesPage extends React.Component {
                                 key={'btn_view_' + record.id}
                                 icon={<EyeFilled />}
                                 onClick={() => {
+                                    this.props.setSite(record);
                                     this.props.history.push(`/app/sites/detail/${record.id}`);
                                 }}
                             ></Button>
@@ -324,4 +320,4 @@ class SitesPage extends React.Component {
     }
 }
 
-export default connect(mapState, mapDispatch)(SitesPage);
+export default connect(null, mapDispatch)(SitesPage);

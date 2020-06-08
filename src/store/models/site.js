@@ -1,7 +1,7 @@
 export default {
     state: null,
     reducers: {
-        setSites(state, payload) {
+        setSite(state, payload) {
             return payload;
         }
     }
