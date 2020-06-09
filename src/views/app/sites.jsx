@@ -48,7 +48,7 @@ class SiteModal extends React.Component {
         if (this.state.mode === 'add') {
             axios.post('/site/add', values).then(
                 (res) => {
-                    if (res.data && res.data.code === 200) {
+                    if (res.data.code === 200) {
                         this.setState({
                             visible: false,
                         });
@@ -71,7 +71,7 @@ class SiteModal extends React.Component {
                 })
                 .then(
                     (res) => {
-                        if (res.data && res.data.code === 200) {
+                        if (res.data.code === 200) {
                             this.setState({
                                 visible: false,
                             });
@@ -175,7 +175,7 @@ class SitesPage extends React.Component {
             })
             .then(
                 (res) => {
-                    if (res.data && res.data.code === 200 && res.data.data) {
+                    if (res.data.code === 200 && res.data.data) {
                         this.setState({
                             sites: res.data.data.data,
                             sites_pagination: {
@@ -217,7 +217,7 @@ class SitesPage extends React.Component {
             })
             .then(
                 (res) => {
-                    if (res.data && res.data.code === 200) {
+                    if (res.data.code === 200) {
                         message.success('删除成功');
                         this.refreshTable();
                     } else {
@@ -300,8 +300,8 @@ class SitesPage extends React.Component {
             <div className="page-sites">
                 <Row gutter={[16, 16]}>
                     <IconCard span={8} icon="CloudServerOutlined" desc="站点数" number={this.state.stats.total}></IconCard>
-                    <IconCard span={8} icon="BugOutlined" desc="近 7 天错误日志提交量" number={this.state.stats.recentWeekSubmit}></IconCard>
-                    <IconCard span={8} icon="FileOutlined" desc="近 7 天普通日志提交量" number={this.state.stats.recentMonthSubmit}></IconCard>
+                    <IconCard span={8} icon="BugOutlined" desc="近7天错误日志提交量" number={this.state.stats.recentWeekSubmit}></IconCard>
+                    <IconCard span={8} icon="FileOutlined" desc="近7天普通日志提交量" number={this.state.stats.recentMonthSubmit}></IconCard>
                 </Row>
                 <Row>
                     <Col span={24}>

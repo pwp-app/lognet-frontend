@@ -60,7 +60,7 @@ class MissionPage extends React.Component {
                 id: this.state.mission.id
             }
         }).then(res => {
-            if (res.data && res.data.code === 200) {
+            if (res.data.code === 200) {
                 this.setState({
                     stats: res.data.data
                 });
@@ -78,7 +78,7 @@ class MissionPage extends React.Component {
             })
             .then(
                 (res) => {
-                    if (res.data && res.data.code === 200) {
+                    if (res.data.code === 200) {
                         this.setState({
                             logs: res.data.data.data,
                             logs_loading: false,
@@ -108,7 +108,7 @@ class MissionPage extends React.Component {
             id,
             missionId: this.state.mission.id
         }).then(res => {
-            if (res.data && res.data.code === 200) {
+            if (res.data.code === 200) {
                 message.success('删除成功');
                 this.refreshTable();
             } else {
@@ -135,7 +135,7 @@ class MissionPage extends React.Component {
                 })
                 .then(
                     (res) => {
-                        if (res.data && res.data.code === 200) {
+                        if (res.data.code === 200) {
                             this.setState(
                                 {
                                     mission: res.data.data,

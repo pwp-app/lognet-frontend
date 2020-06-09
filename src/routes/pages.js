@@ -1,3 +1,4 @@
+import DashboardPage from '../views/app/dashboard';
 import SitesPage from '../views/app/sites';
 import SiteDetailPage from '../views/app/sitedetail';
 import UserSettingsPage from '../views/app/usersettings';
@@ -6,8 +7,9 @@ import MissionPage from '../views/app/mission';
 export default [
     {
         path: '',
-        title: '仪表盘',
+        title: '主页',
         icon: 'DashboardOutlined',
+        component: DashboardPage,
         auth: 'user',
     },
     {

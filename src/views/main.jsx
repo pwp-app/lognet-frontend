@@ -40,7 +40,7 @@ class MainLayout extends React.Component {
             this.props.history.push('/portal');
             return;
         }
-        if (res.data && res.data.code === 200 && res.data.data) {
+        if (res.data.code === 200 && res.data.data) {
             this.props.setUser(res.data.data);
             this.setState({
                 userInfoFetched: true,

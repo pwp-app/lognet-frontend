@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { Card, Row, Col, message, Skeleton, Button, Table, Popconfirm, Modal, Form, Input, DatePicker } from 'antd';
-import { EyeOutlined, CopyOutlined, EyeFilled, EditFilled, DeleteFilled } from '@ant-design/icons';
+import { EyeOutlined, CopyOutlined, EyeFilled, EditFilled, DeleteFilled, PlayCircleFilled, StopFilled } from '@ant-design/icons';
 import NumberCard from '../../components/main/numbercard';
 import axios from '../../utils/axios';
 
@@ -74,7 +74,7 @@ class SiteDetailPage extends React.Component {
             })
             .then(
                 (res) => {
-                    if (res.data && res.data.code === 200) {
+                    if (res.data.code === 200) {
                         this.setState({
                             logs: res.data.data.data,
                             logs_loading: false,
@@ -110,7 +110,7 @@ class SiteDetailPage extends React.Component {
             })
             .then(
                 (res) => {
-                    if (res.data && res.data.code === 200) {
+                    if (res.data.code === 200) {
                         this.setState({
                             missions: res.data.data.data,
                             mission_loading: false,
@@ -141,6 +141,44 @@ class SiteDetailPage extends React.Component {
     editMission = (record) => {
         this.missionModal.current.show('edit', record);
     };
+    enableMission = (id) => {
+        axios
+            .post('/mission/enable', {
+                id,
+            })
+            .then(
+                (res) => {
+                    if (res.data.code === 200) {
+                        message.success('启用成功');
+                        this.refreshMissions();
+                    } else {
+                        message.error(res.data.message);
+                    }
+                },
+                () => {
+                    message.error('与服务器通讯失败');
+                }
+            );
+    };
+    disableMission = (id) => {
+        axios
+            .post('/mission/disable', {
+                id,
+            })
+            .then(
+                (res) => {
+                    if (res.data.code === 200) {
+                        message.success('禁用成功');
+                        this.refreshMissions();
+                    } else {
+                        message.error(res.data.message);
+                    }
+                },
+                () => {
+                    message.error('与服务器通讯失败');
+                }
+            );
+    };
     deleteMission = (id) => {
         axios
             .post('/mission/delete', {
@@ -148,7 +186,7 @@ class SiteDetailPage extends React.Component {
             })
             .then(
                 (res) => {
-                    if (res.data && res.data.code === 200) {
+                    if (res.data.code === 200) {
                         message.success('删除成功');
                         this.refreshMissions();
                     } else {
@@ -167,7 +205,7 @@ class SiteDetailPage extends React.Component {
             })
             .then(
                 (res) => {
-                    if (res.data && res.data.code === 200) {
+                    if (res.data.code === 200) {
                         message.success('删除成功');
                         this.refreshLogs();
                     } else {
@@ -187,7 +225,7 @@ class SiteDetailPage extends React.Component {
                 },
             })
             .then((res) => {
-                if (res.data && res.data.code === 200) {
+                if (res.data.code === 200) {
                     this.setState({
                         stats: res.data.data,
                     });
@@ -214,7 +252,7 @@ class SiteDetailPage extends React.Component {
                 })
                 .then(
                     (res) => {
-                        if (res.data && res.data.code === 200) {
+                        if (res.data.code === 200) {
                             this.setState(
                                 {
                                     site: res.data.data,
@@ -249,7 +287,7 @@ class SiteDetailPage extends React.Component {
                 key: 'path',
                 render: (text) => {
                     return <span className="table-linewrap">{text}</span>;
-                }
+                },
             },
             {
                 title: '内容',
@@ -344,6 +382,24 @@ class SiteDetailPage extends React.Component {
                                     this.editMission(record);
                                 }}
                             ></Button>
+                            {record.enabled ? (
+                                <Button
+                                    type="danger"
+                                    icon={<StopFilled />}
+                                    onClick={() => {
+                                        this.disableMission(record.id);
+                                    }}
+                                ></Button>
+                            ) : (
+                                <Button
+                                    className="button-enable"
+                                    type="primary"
+                                    icon={<PlayCircleFilled />}
+                                    onClick={() => {
+                                        this.enableMission(record.id);
+                                    }}
+                                ></Button>
+                            )}
                             <Popconfirm
                                 placement="topRight"
                                 key={'btn_delete' + record.id}
@@ -475,7 +531,7 @@ class MissionModal extends React.Component {
             })
             .then(
                 (res) => {
-                    if (res.data && res.data.code === 200) {
+                    if (res.data.code === 200) {
                         this.setState({
                             visible: false,
                         });
@@ -577,8 +633,8 @@ class LogModal extends React.Component {
     render() {
         const layout = {
             left: 4,
-            right: 20
-        }
+            right: 20,
+        };
         return (
             <Modal className="modal-log-detail" width={680} visible={this.state.visible} onCancel={() => this.setState({ visible: false })} onOk={() => this.setState({ visible: false })} title="日志详情">
                 <Row>

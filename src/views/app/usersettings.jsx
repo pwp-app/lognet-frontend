@@ -79,7 +79,7 @@ class UserSettingsPage extends React.Component {
         axios
             .get('/user/fetchLoginLog')
             .then((res) => {
-                if (res.data && res.data.code === 200) {
+                if (res.data.code === 200) {
                     let data = res.data.data;
                     for (let item of data) {
                         item.key = item.createTime;

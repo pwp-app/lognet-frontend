@@ -24,7 +24,7 @@ class UserDropdown extends React.Component {
     logout = () => {
         axios.get('/portal/logout').then(
             (res) => {
-                if (res.data && res.data.code === 200) {
+                if (res.data.code === 200) {
                     message.success('登出成功');
                     this.props.setLogout(true);
                 } else {

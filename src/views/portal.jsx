@@ -487,7 +487,7 @@ class ForgetPasswordForm extends React.Component {
             })
             .then(
                 (res) => {
-                    if (res.data && res.data.code === 200) {
+                    if (res.data.code === 200) {
                         message.success('发送成功，请到您填写的邮箱内查收验证码');
                         this.setState({
                             mailSent: true,
@@ -519,7 +519,7 @@ class ForgetPasswordForm extends React.Component {
             })
             .then(
                 (res) => {
-                    if (res.data && res.data.code === 200) {
+                    if (res.data.code === 200) {
                         message.success('密码重置成功，请使用新密码登录');
                         this.props.switch();
                     } else {
