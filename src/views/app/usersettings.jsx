@@ -2,7 +2,6 @@ import React from 'react';
 import { Row, Col, Card, Table, Modal, message, Input, Form } from 'antd';
 import { connect } from 'react-redux';
 import SettingCard from '../../components/main/settingcard';
-import SettingIconCard from '../../components/main/settingiconcard';
 import axios from '../../utils/axios';
 import sha256 from 'crypto-js/sha256';
 
@@ -105,7 +104,24 @@ class UserSettingsPage extends React.Component {
         return (
             <div className="page-us">
                 <Row gutter={[18, 18]}>
-                    <Col span={12}>
+                    <Col span={8}>
+                        <SettingCard
+                            title="修改密码"
+                            content={
+                                <>
+                                    <p>我们建议您定期修改密码来提升帐号的安全保护强度</p>
+                                    <p>请尽可能使用较强的密码来保护您的账号</p>
+                                </>
+                            }
+                            action={() => {
+                                this.setState({
+                                    modPasswordVisible: true,
+                                });
+                            }}
+                            actionName="立即修改"
+                        />
+                    </Col>
+                    <Col span={8}>
                         <SettingCard
                             title="邮箱设置"
                             content={
@@ -117,7 +133,7 @@ class UserSettingsPage extends React.Component {
                             actionName="更换绑定"
                         />
                     </Col>
-                    <Col span={12}>
+                    <Col span={8}>
                         <SettingCard
                             title="头像设置"
                             content={
@@ -130,20 +146,6 @@ class UserSettingsPage extends React.Component {
                             actionName="立即前往"
                         />
                     </Col>
-                    <Col span={12}>
-                        <SettingIconCard
-                            icon="LockFilled"
-                            title="修改密码"
-                            content={<p>我们建议您定期修改密码来提升帐号的安全保护强度</p>}
-                            action={() => {
-                                this.setState({
-                                    modPasswordVisible: true,
-                                });
-                            }}
-                            actionName="立即修改"
-                        />
-                    </Col>
-                    <Col span={12}></Col>
                     <Col span={24}>
                         <Card className="card-table us-card-logs" title="最近 10 次登录记录">
                             <Table dataSource={this.state.recentLogs} columns={logTableColumns} pagination={false} loading={this.state.tableLoading} rowKey={row=>row.createTime}/>
