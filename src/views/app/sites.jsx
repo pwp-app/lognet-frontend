@@ -149,8 +149,8 @@ class SitesPage extends React.Component {
     state = {
         stats: {
             total: 0,
-            recentWeekSubmit: 0,
-            recentMonthSubmit: 0,
+            recentGeneralLog: 0,
+            recentMissionLog: 0,
         },
         sites: null,
         sites_pagination: {
@@ -200,12 +200,24 @@ class SitesPage extends React.Component {
                 }
             );
     };
-    handleTableChange = (pagination, filters, sorter) => {
-        this.setState({
-            sites_pagination: pagination
-        }, () => {
-            this.fetch(this.state.sites_pagination);
+    fetchOverall = () => {
+        axios.get('/site/fetchOverall').then((res) => {
+            if (res.data.code === 200) {
+                this.setState({
+                    stats: res.data.data,
+                });
+            }
         });
+    };
+    handleTableChange = (pagination, filters, sorter) => {
+        this.setState(
+            {
+                sites_pagination: pagination,
+            },
+            () => {
+                this.fetch(this.state.sites_pagination);
+            }
+        );
     };
     addSite = () => {
         this.siteModal.current.show('add');
@@ -234,6 +246,7 @@ class SitesPage extends React.Component {
     };
     componentDidMount = () => {
         this.refreshTable();
+        this.fetchOverall();
     };
     render() {
         const tableColumns = [
@@ -300,8 +313,8 @@ class SitesPage extends React.Component {
             <div className="page-sites">
                 <Row gutter={[16, 16]}>
                     <IconCard span={8} icon="CloudServerOutlined" desc="站点数" number={this.state.stats.total}></IconCard>
-                    <IconCard span={8} icon="BugOutlined" desc="近7天错误日志提交量" number={this.state.stats.recentWeekSubmit}></IconCard>
-                    <IconCard span={8} icon="FileOutlined" desc="近7天普通日志提交量" number={this.state.stats.recentMonthSubmit}></IconCard>
+                    <IconCard span={8} icon="BugOutlined" desc="近7天错误日志提交量" number={this.state.stats.recentGeneralLog}></IconCard>
+                    <IconCard span={8} icon="FileOutlined" desc="近7天任务日志提交量" number={this.state.stats.recentMissionLog}></IconCard>
                 </Row>
                 <Row>
                     <Col span={24}>
@@ -317,13 +330,7 @@ class SitesPage extends React.Component {
                                 </div>
                             }
                         >
-                            <Table
-                                dataSource={this.state.sites}
-                                columns={tableColumns}
-                                pagination={this.state.sites_pagination}
-                                loading={this.state.sites_loading}
-                                rowKey={(row) => row.id}
-                                handleTableChange={this.handleTableChange}/>
+                            <Table dataSource={this.state.sites} columns={tableColumns} pagination={this.state.sites_pagination} loading={this.state.sites_loading} rowKey={(row) => row.id} handleTableChange={this.handleTableChange} />
                         </Card>
                     </Col>
                 </Row>
