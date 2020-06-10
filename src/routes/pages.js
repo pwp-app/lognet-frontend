@@ -7,7 +7,7 @@ import MissionPage from '../views/app/mission';
 export default [
     {
         path: '',
-        title: '主页',
+        title: '仪表盘',
         icon: 'DashboardOutlined',
         component: DashboardPage,
         auth: 'user',

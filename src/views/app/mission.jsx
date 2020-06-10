@@ -42,7 +42,11 @@ class MissionPage extends React.Component {
         },
     };
     goBack = () => {
-        this.props.history.push(`/app/sites/detail/${this.state.mission.siteId}`);
+        if (window.location.search.includes('from=dashboard')) {
+            this.props.history.push('/app');
+        } else {
+            this.props.history.push(`/app/sites/detail/${this.state.mission.siteId}`);
+        }
     };
     copyId = () => {
         navigator.clipboard.writeText(this.state.mission.id);
