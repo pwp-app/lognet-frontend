@@ -40,44 +40,111 @@ class UserSettingsPage extends React.Component {
     constructor(props) {
         super(props);
         this.modPasswordForm = React.createRef();
+        this.changeBindForm = React.createRef();
+        this.mailValidateForm = React.createRef();
     }
     state = {
         recentLogs: [],
         changeBindVisible: false,
+        mailValidateVisible: false,
         modPasswordVisible: false,
         tableLoading: true,
     };
     openGravatar = () => {
         window.open('https://en.gravatar.com/emails/');
     };
+    // fetch user info
+    fetchInfo = () => {
+        axios.get('/user/fetchInfo').then((res) => {
+            if (res.data.code === 200) {
+                this.props.setUser(res.data.data);
+            }
+        });
+    };
     // mod password
     modPasswordOk = () => {
         this.modPasswordForm.current.submit();
-    }
+    };
     modPasswordSubmit = (values) => {
         values.oldPassword = sha256(values.oldPassword).toString();
         values.newPassword = sha256(values.newPassword).toString();
         values.newConfirmPassword = sha256(values.newConfirmPassword).toString();
-        axios.post('/user/changePassword', values).then((res) => {
-            if (res.data.code === 200) {
-                message.success('修改成功，请使用密码重新登录');
-                this.setState({
-                    modPasswordVisible: false,
-                });
-                // 置为初始态
-                this.props.setUser(null);
-                this.props.history.push('/portal');
-            } else {
-                message.error(res.data.message);
+        axios.post('/user/changePassword', values).then(
+            (res) => {
+                if (res.data.code === 200) {
+                    message.success('修改成功，请使用密码重新登录');
+                    this.setState({
+                        modPasswordVisible: false,
+                    });
+                    // 置为初始态
+                    this.props.setUser(null);
+                    this.props.history.push('/portal');
+                } else {
+                    message.error(res.data.message);
+                }
+            },
+            () => {
+                message.error('提交失败');
             }
-        }, () => {
-            message.error('提交失败');
-        });
-    }
-    componentDidMount = () => {
+        );
+    };
+    submitChangeBind = () => {
+        this.changeBindForm.current.submit();
+    };
+    changeBindSubmit = (values) => {
+        values.password = sha256(values.password).toString();
+        axios.post('/user/changeBind', values).then(
+            (res) => {
+                if (res.data.code === 200) {
+                    message.success('您的新邮箱将会收到一个验证码');
+                    this.setState(
+                        {
+                            changeBindVisible: false,
+                            mailValidateVisible: true,
+                            newMail: values.newMail,
+                        }
+                    );
+                    if (this.mailValidateForm.current) {
+                        this.mailValidateForm.current.resetFields();
+                    }
+                } else {
+                    message.error(res.data.message);
+                }
+            },
+            () => {
+                message.error('与服务器通讯失败');
+            }
+        );
+    };
+    submitMailValidate = () => {
+        this.mailValidateForm.current.submit();
+    };
+    mailValidateSubmit = (values) => {
         axios
-            .get('/user/fetchLoginLog')
-            .then((res) => {
+            .post('/user/bindValidate', {
+                code: values.code,
+                mail: this.state.newMail,
+            })
+            .then(
+                (res) => {
+                    if (res.data.code === 200) {
+                        message.success('绑定成功');
+                        this.setState({
+                            mailValidateVisible: false,
+                        });
+                        this.fetchInfo();
+                    } else {
+                        message.error(res.data.message);
+                    }
+                },
+                () => {
+                    message.error('与服务器通讯失败');
+                }
+            );
+    };
+    componentDidMount = () => {
+        axios.get('/user/fetchLoginLog').then(
+            (res) => {
                 if (res.data.code === 200) {
                     let data = res.data.data;
                     for (let item of data) {
@@ -93,12 +160,14 @@ class UserSettingsPage extends React.Component {
                     });
                     message.error('获取登录记录失败');
                 }
-            }, () => {
+            },
+            () => {
                 this.setState({
                     tableLoading: false,
                 });
                 message.error('获取登录记录失败');
-            });
+            }
+        );
     };
     render() {
         return (
@@ -117,6 +186,9 @@ class UserSettingsPage extends React.Component {
                                 this.setState({
                                     modPasswordVisible: true,
                                 });
+                                if (this.modPasswordForm.current) {
+                                    this.modPasswordForm.current.resetFields();
+                                }
                             }}
                             actionName="立即修改"
                         />
@@ -130,6 +202,14 @@ class UserSettingsPage extends React.Component {
                                     <p>{this.props.user.email}</p>
                                 </>
                             }
+                            action={() => {
+                                this.setState({
+                                    changeBindVisible: true,
+                                });
+                                if (this.changeBindForm.current) {
+                                    this.changeBindForm.current.resetFields();
+                                }
+                            }}
                             actionName="更换绑定"
                         />
                     </Col>
@@ -148,15 +228,72 @@ class UserSettingsPage extends React.Component {
                     </Col>
                     <Col span={24}>
                         <Card className="card-table us-card-logs" title="最近 10 次登录记录">
-                            <Table dataSource={this.state.recentLogs} columns={logTableColumns} pagination={false} loading={this.state.tableLoading} rowKey={row=>row.createTime}/>
+                            <Table dataSource={this.state.recentLogs} columns={logTableColumns} pagination={false} loading={this.state.tableLoading} rowKey={(row) => row.createTime} />
                         </Card>
                     </Col>
                 </Row>
                 <Modal
                     title="更改绑定邮箱"
                     visible={this.state.changeBindVisible}
-                    >
-
+                    onOk={this.submitChangeBind}
+                    onCancel={() => {
+                        this.setState({ changeBindVisible: false });
+                    }}
+                >
+                    <Form {...layout} ref={this.changeBindForm} name="changeBind" labelAlign="left" onFinish={this.changeBindSubmit}>
+                        <Form.Item
+                            name="password"
+                            label="密码"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: '请输入帐号的密码',
+                                },
+                            ]}
+                        >
+                            <Input.Password />
+                        </Form.Item>
+                        <Form.Item
+                            name="newMail"
+                            label="新邮箱"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: '请输入要绑定的新邮箱',
+                                },
+                                {
+                                    pattern: /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/,
+                                    message: '请输入正确的邮箱地址',
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Form>
+                </Modal>
+                <Modal title="邮箱验证" name="mailValidate" visible={this.state.mailValidateVisible} onOk={this.submitMailValidate} onCancel={() => this.setState({ mailValidateVisible: false })}>
+                    <Form {...layout} ref={this.mailValidateForm} name="mailValidate" labelAlign="left" onFinish={this.mailValidateSubmit}>
+                        <Form.Item
+                            name="code"
+                            label="验证码"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: '请填写验证码',
+                                },
+                                {
+                                    pattern: /^\d{6}$/,
+                                    message: '请填写正确的验证码',
+                                    validateTrigger: 'blur',
+                                },
+                            ]}
+                            getValueFromEvent={(e) => {
+                                return e.target.value.replace(/\D/g, '');
+                            }}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Form>
                 </Modal>
                 <Modal
                     title="修改密码"
