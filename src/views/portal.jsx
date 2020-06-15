@@ -36,7 +36,18 @@ class PortalPage extends React.Component {
     };
     componentDidMount = () => {
         this.getToken();
+        this.checkAutoLogin();
         this.props.setLogout(false);
+    };
+    checkAutoLogin = async () => {
+        try {
+            let res = await axios.get('/ping/state');
+            if (res.data.code === 200) {
+                this.props.history.push('/app');
+            }
+        } catch {
+            // do nothing
+        }
     };
     getToken = async () => {
         this.setState({
