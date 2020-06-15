@@ -76,6 +76,10 @@ class PortalPage extends React.Component {
         this.getValidate();
     };
     getValidate = () => {
+        if (!this.props.user) {
+            message.error('无法获取邮箱信息');
+            return;
+        }
         this.setState({
             formType: 'validation',
             validateRetryTime: 60,
@@ -102,7 +106,9 @@ class PortalPage extends React.Component {
                 (res) => {
                     if (res.data.code !== 200) {
                         message.error(res.data.message);
+                        return;
                     }
+                    message.success('验证码已经发送到您的邮箱，请查收');
                 },
                 () => {
                     message.error('和服务器通讯失败，无法获取验证码');
@@ -132,6 +138,8 @@ class PortalPage extends React.Component {
                                 formType: 'login',
                             });
                         }
+                    } else {
+                        message.error(res.data.message);
                     }
                 },
                 () => {
@@ -287,16 +295,17 @@ class RegisterFormBuilder extends React.Component {
     state = {
         buttonDisabled: false,
     };
-    onFinish = async (values) => {
+    onFinish = (values) => {
         this.setState({
             buttonDisabled: true,
         });
+        let email = values.email;
         axios
             .post('/portal/register', {
                 username: values.username,
                 password: sha256(values.password).toString(),
                 confirmPassword: sha256(values.confirmPassword).toString(),
-                email: values.email,
+                email,
                 token: this.props.token,
             })
             .then(
@@ -309,7 +318,7 @@ class RegisterFormBuilder extends React.Component {
                         return;
                     }
                     message.success('注册成功');
-                    this.props.setEmail(values.email);
+                    this.props.setEmail(email);
                     this.props.checkValidate('register');
                 },
                 (e) => {
