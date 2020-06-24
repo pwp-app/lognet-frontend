@@ -655,6 +655,26 @@ class LogModal extends React.Component {
                 </Row>
                 <Row>
                     <Col span={layout.left}>
+                        <span>User Agent: </span>
+                    </Col>
+                    <Col span={layout.right}>
+                        <span>{this.state.log.userAgent}</span>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={layout.left}>
+                        <span>屏幕信息: </span>
+                    </Col>
+                    <Col span={layout.right}>
+                        {this.state.log.clientWidth && this.state.log.clientHeight && this.state.log.windowInnerWidth && this.state.log.windowInnerHeight && this.state.log.windowOuterWidth && this.state.windowOuterHeight ? (
+                            <span>
+                                Client: {this.state.log.clientWidth} x {this.state.log.clientHeight}, Window: {this.state.log.windowInnerWidth} x {this.state.log.windowInnerHeight} | {this.state.log.windowOuterWidth} x {this.state.log.windowOuterHeight}
+                            </span>
+                        ) : null}
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={layout.left}>
                         <span>内容: </span>
                     </Col>
                     <Col span={layout.right}>
