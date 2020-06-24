@@ -52,18 +52,11 @@ class MainLayout extends React.Component {
     renderRoutes = (routes, parentPath) => {
         let res = [];
         for (let route of routes) {
-            let path = parentPath ? parentPath + route.path : '/app' + route.path;
-            if (route.children) {
-                res = res.concat(this.renderRoutes(route.children, path));
-            }
-            if (route.param) {
-                path = path + route.param;
-            }
             // Guard
             if (route.auth) {
                 if (route.auth === 'user') {
-                    if (!this.props.user.role || this.props.user.role.name !== 'user') {
-                        continue;
+                    if (!this.props.user.role || this.props.user.role.name === 'guset') {
+                        return null;
                     }
                 } else if (route.auth === 'admin') {
                     if (!this.props.user.role || this.props.user.role.name !== 'admin') {
@@ -71,7 +64,16 @@ class MainLayout extends React.Component {
                     }
                 }
             }
-            res.push(<Route exact key={path} path={path} component={route.component} />);
+            let path = parentPath ? parentPath + route.path : '/app' + route.path;
+            if (route.children) {
+                res = res.concat(this.renderRoutes(route.children, path));
+            }
+            if (route.param) {
+                path = path + route.param;
+            }
+            if (route.component) {
+                res.push(<Route exact key={path} path={path} component={route.component} />);
+            }
         }
         return res;
     };
@@ -82,7 +84,7 @@ class MainLayout extends React.Component {
         if (!this.state.userInfoFetched) {
             return null;
         }
-        if (!this.props.user || !this.props.user.role || this.props.user.role.name !== 'user') {
+        if (!this.props.user || !this.props.user.role || this.props.user.role.name === 'guest') {
             return <Redirect to="/404" />;
         }
         return (

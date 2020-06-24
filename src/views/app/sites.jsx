@@ -267,7 +267,7 @@ class SitesPage extends React.Component {
                 key: 'state',
                 width: 180,
                 render: (value) => {
-                    return value ? '正常' : '禁用中';
+                    return value ? '正常' : '禁用';
                 },
             },
             {

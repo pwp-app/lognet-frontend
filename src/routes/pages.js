@@ -3,6 +3,8 @@ import SitesPage from '../views/app/sites';
 import SiteDetailPage from '../views/app/sitedetail';
 import UserSettingsPage from '../views/app/usersettings';
 import MissionPage from '../views/app/mission';
+import UserManagePage from '../views/app/usermanage';
+import SiteManagePage from '../views/app/sitemanage';
 
 export default [
     {
@@ -42,5 +44,25 @@ export default [
         icon: 'SettingOutlined',
         component: UserSettingsPage,
         auth: 'user',
+    },
+    {
+        path: '/system',
+        title: '系统管理',
+        icon: 'UserOutlined',
+        auth: 'admin',
+        children: [
+            {
+                path: '/user',
+                title: '用户管理',
+                auth: 'admin',
+                component: UserManagePage,
+            },
+            {
+                path: '/sites',
+                title: '站点管理',
+                auth: 'admin',
+                component: SiteManagePage,
+            }
+        ]
     }
 ]

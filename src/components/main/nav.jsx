@@ -1,7 +1,12 @@
 import React from 'react';
 import { Menu } from 'antd';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import Icon from '../common/icon';
+
+const mapState = (state) => ({
+    user: state.user,
+});
 
 class Nav extends React.Component {
     state = {
@@ -9,6 +14,18 @@ class Nav extends React.Component {
     }
     renderMenu = (data, noIcon = false, parentPath = null)=>{
         return data.map((item)=>{
+            if (item.auth) {
+                if (item.auth === 'user') {
+                    if (!this.props.user.role || this.props.user.role.name === 'guset') {
+                        return null;
+                    }
+                } else if (item.auth === 'admin') {
+                    if (!this.props.user.role || this.props.user.role.name !== 'admin') {
+                        return null;
+                    }
+                }
+            }
+            let path = parentPath ? parentPath + item.path : '/app' + item.path;
             if(item.children && !item.noSubmenu){
                 return (
                     <Menu.SubMenu title={
@@ -16,12 +33,11 @@ class Nav extends React.Component {
                         {noIcon ? null : item.icon ? <Icon type={item.icon}></Icon> : null}
                             <span>{item.title}</span>
                         </span>
-                    } key={item.path}>
-                        {this.renderMenu(item.children, true, item.path)}
+                    } key={path}>
+                        {this.renderMenu(item.children, true, path)}
                     </Menu.SubMenu>
                 )
             }
-            let path = parentPath ? parentPath + item.path : '/app' + item.path;
             return (
                 <Menu.Item title={item.title} key={path}>
                     <Link to={path}>
@@ -60,4 +76,4 @@ class Nav extends React.Component {
     }
 }
 
-export default Nav;
+export default connect(mapState, null)(Nav);
