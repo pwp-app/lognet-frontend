@@ -3,6 +3,7 @@ import SitesPage from '../views/app/sites';
 import SiteDetailPage from '../views/app/sitedetail';
 import UserSettingsPage from '../views/app/usersettings';
 import MissionPage from '../views/app/mission';
+import DocPage from '../views/app/doc';
 import UserManagePage from '../views/app/usermanage';
 import SiteManagePage from '../views/app/sitemanage';
 
@@ -43,6 +44,13 @@ export default [
         title: '用户设置',
         icon: 'SettingOutlined',
         component: UserSettingsPage,
+        auth: 'user',
+    },
+    {
+        path: '/doc',
+        title: '使用文档',
+        icon: 'FileOutlined',
+        component: DocPage,
         auth: 'user',
     },
     {
