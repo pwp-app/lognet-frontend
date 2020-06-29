@@ -236,6 +236,10 @@ class LoginFormBuilder extends React.Component {
         this.setState({
             buttonDisabled: true,
         });
+        if (!this.props.token) {
+            message.error('验证码加载失败，请刷新页面后再试');
+            return;
+        }
         axios
             .post('/portal/login', {
                 ...values,
