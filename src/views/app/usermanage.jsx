@@ -36,6 +36,7 @@ class UserManagePage extends React.Component {
                             },
                             users_loading: false,
                         });
+                        console.log(res.data.data.data);
                     }
                 },
                 () => {
@@ -126,26 +127,26 @@ class UserManagePage extends React.Component {
                 title: '操作',
                 key: 'operation',
                 render: (_, record) => {
-                    if (record.id === this.props.user.id) {
+                    if (record.uid === this.props.user.uid) {
                         return '-';
                     }
                     const res = [];
                     if (record.enabled) {
                         res.push(
-                            <Button key={'btn_disabled_' + record.id} type="danger" onClick={() => {this.request('banUser', record.id)}}>禁用</Button>
+                            <Button key={'btn_disabled_' + record.uid} type="danger" onClick={() => {this.request('banUser', record.uid)}}>禁用</Button>
                         );
                     } else {
                         res.push(
-                            <Button key={'btn_enabled_' + record.id} type="primary" onClick={() => {this.request('unbanUser', record.id)}}>启用</Button>
+                            <Button key={'btn_enabled_' + record.uid} type="primary" onClick={() => {this.request('unbanUser', record.uid)}}>启用</Button>
                         );
                     }
                     if (record.role === 'admin') {
                         res.push(
-                            <Button key={'btn_user_' + record.id} type="primary" onClick={() => {this.request('setUser', record.id)}}>设为用户</Button>
+                            <Button key={'btn_user_' + record.uid} type="primary" onClick={() => {this.request('setUser', record.uid)}}>设为用户</Button>
                         );
                     } else if (record.role === 'user') {
                         res.push(
-                            <Button key={'btn_admin_' + record.id} type="primary" onClick={() => {this.request('setAdmin', record.id)}}>设为管理员</Button>
+                            <Button key={'btn_admin_' + record.uid} type="primary" onClick={() => {this.request('setAdmin', record.uid)}}>设为管理员</Button>
                         );
                     }
                     return (
@@ -161,7 +162,7 @@ class UserManagePage extends React.Component {
                 <Row>
                     <Col span={24}>
                         <Card title="用户列表" className="card-table" extra={<Button onClick={this.refreshTable}>刷新</Button>}>
-                            <Table dataSource={this.state.users} columns={columns} pagination={this.state.pagination} loading={this.state.users_loading} rowKey={(row) => row.id} handleTableChange={this.handleTableChange}></Table>
+                            <Table dataSource={this.state.users} columns={columns} pagination={this.state.pagination} loading={this.state.users_loading} rowKey={(row) => row.uid} handleTableChange={this.handleTableChange}></Table>
                         </Card>
                     </Col>
                 </Row>
