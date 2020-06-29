@@ -16,7 +16,7 @@ class Nav extends React.Component {
         return data.map((item)=>{
             if (item.auth) {
                 if (item.auth === 'user') {
-                    if (!this.props.user.role || this.props.user.role.name === 'guset') {
+                    if (!this.props.user.role || this.props.user.role.name === 'guest') {
                         return null;
                     }
                 } else if (item.auth === 'admin') {

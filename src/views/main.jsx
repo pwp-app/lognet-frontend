@@ -55,7 +55,7 @@ class MainLayout extends React.Component {
             // Guard
             if (route.auth) {
                 if (route.auth === 'user') {
-                    if (!this.props.user.role || this.props.user.role.name === 'guset') {
+                    if (!this.props.user.role || this.props.user.role.name === 'guest') {
                         return null;
                     }
                 } else if (route.auth === 'admin') {
