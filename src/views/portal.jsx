@@ -75,16 +75,17 @@ class PortalPage extends React.Component {
     checkValidate = (from) => {
         this.setState({
             validateFrom: from,
-        });
-        if (from === 'login') {
-            // 已经不是Guest，不需要验证，直接放行
-            if (this.props.user.role && this.props.user.role.level !== 0) {
-                this.props.history.push('/app');
-                return;
+        }, () => {
+            if (from === 'login') {
+                // 已经不是Guest，不需要验证，直接放行
+                if (this.props.user.role && this.props.user.role.level !== 0) {
+                    this.props.history.push('/app');
+                    return;
+                }
             }
-        }
-        // 注册默认都要验证
-        this.getValidate();
+            // 注册默认都要验证
+            this.getValidate();
+        });
     };
     getValidate = () => {
         if (!this.props.user) {
@@ -139,11 +140,11 @@ class PortalPage extends React.Component {
             .then(
                 (res) => {
                     if (res.data.code === 200) {
-                        if (this.state.from === 'login') {
+                        if (this.state.validateFrom === 'login') {
                             // 验证成功，放行到主界面
                             message.success('验证成功');
                             this.props.history.push('/app');
-                        } else if (this.state.from === 'register') {
+                        } else if (this.state.validateFrom === 'register') {
                             message.success('验证成功，请输入您的凭据登录系统');
                             this.setState({
                                 formType: 'login',
@@ -328,7 +329,6 @@ class RegisterFormBuilder extends React.Component {
                         message.error(res.data.message);
                         return;
                     }
-                    message.success('注册成功');
                     this.props.setEmail(email);
                     this.props.checkValidate('register');
                 },
