@@ -57,6 +57,7 @@ class MissionPage extends React.Component {
             logs_loading: true,
         });
         this.fetchLogs(this.state.logs_pagination);
+        this.fetchStats();
     };
     fetchStats = () => {
         axios.get('/mission/fetchStats', {
@@ -128,7 +129,6 @@ class MissionPage extends React.Component {
                 mission: this.props.mission,
             }, () => {
                 this.refreshTable();
-                this.fetchStats();
             });
         } else {
             axios
@@ -146,7 +146,6 @@ class MissionPage extends React.Component {
                                 },
                                 () => {
                                     this.refreshTable();
-                                    this.fetchStats();
                                 }
                             );
                         } else {
