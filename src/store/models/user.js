@@ -1,5 +1,5 @@
 export default {
-    state: null,
+    state: {},
     reducers: {
         setUser(state, payload) {
             return payload;
